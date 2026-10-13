@@ -1,0 +1,49 @@
+{
+  "geometry": {
+    "width": 0.00384,
+    "height": 0.00384,
+    "preset": "solid",
+    "seed": 42,
+    "pore_count": 16,
+    "radius_min": 0.045,
+    "radius_max": 0.075,
+    "minimum_ligament": 0.04,
+    "boundary_margin": 0.12
+  },
+  "material": {
+    "E": 1000.0,
+    "nu": 0.25,
+    "Gc": 1e-05,
+    "ell": 0.00023999999999999998,
+    "residual_stiffness": 1e-06,
+    "kinematics": "plane_strain",
+    "thickness": 0.00384
+  },
+  "mesh": {
+    "size": 7.999999999999999e-05
+  },
+  "loading": {
+    "maximum_separation": 7.680000000000001e-05,
+    "increments": 80,
+    "minimum_increment": 7.500000000000001e-09
+  },
+  "solver": {
+    "backend": "cpu",
+    "linear_solver": "gmres",
+    "preconditioner": "gamg",
+    "ksp_rtol": 1e-09,
+    "ksp_atol": 1e-24,
+    "ksp_max_it": 20000,
+    "snes_rtol": 1e-09,
+    "snes_atol": 1e-18,
+    "snes_max_it": 50,
+    "stagger_tolerance": 1e-05,
+    "maximum_stagger_iterations": 300
+  },
+  "output": {
+    "save_fields": true,
+    "field_stride": 1,
+    "save_linear_systems": false
+  },
+  "image_model_note": "Illustrative material/thickness/loading; 2D crop boundaries are assumed grips/free edges, not experimentally measured boundaries"
+}

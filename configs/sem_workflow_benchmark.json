@@ -1,0 +1,22 @@
+{
+  "workspace": "..",
+  "dataset": "datasets/skarberg",
+  "images": ["HPC22_0100", "HPC30_0100"],
+  "meshing": {
+    "mode": "provided", "pixel_size_nm": 10.0,
+    "crop_x": 1400, "crop_y": 900, "crop_width": 384, "crop_height": 384,
+    "component": "largest", "min_solid_pixels": 0, "fill_holes_pixels": 0,
+    "simplify_px": 0.5, "refinement_band_nm": 100.0,
+    "algorithm": 6, "smoothing": 5, "ell_nm": 240.0
+  },
+  "mesh_sizes_nm": [80.0, 60.0, 40.0],
+  "boundary_size_ratio": 0.5,
+  "fracture_config": "configs/sem_fracture.json",
+  "maximum_strain": 0.02,
+  "backends": ["cpu", "gpu"],
+  "repeats": 5,
+  "warmups": 1,
+  "cpu_threads": 1,
+  "timeout_seconds": 7200,
+  "notes": "Illustrative section model. Largest-component selection is explicit and audited. Material properties/thickness and artificial crop boundary conditions require calibration. Dataset download is outside benchmark timing."
+}
