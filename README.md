@@ -4,10 +4,18 @@ Create a finite-element mesh from Skärberg SEM images, run horizontal-tension
 phase-field fracture on that exact mesh, and view the resulting animation.
 
 ```bash
-cd /nfs/hpc/share/scumnioj/PhaseFieldTest
+cd /path/to/your/checkout
 source activate.sh
+python fetch_skarberg.py  # First run only: download the public SEM dataset
 python sem_meshing_gui.py --port 8765
 ```
+
+`environment.yml` lists the Linux dependencies. `source activate.sh` downloads
+them and creates `.conda/` if it is missing, then activates and checks the
+environment. Conda must be installed; on this cluster the script loads its
+Conda module automatically. CUDA PETSc is enabled when the CUDA module is
+available. To create a CPU-only environment, use
+`SEM_PETSC_BACKEND=cpu source activate.sh`.
 
 Open <http://127.0.0.1:8765>. The launcher replaces an existing process on the
 selected port. For remote access, forward that port from your workstation:

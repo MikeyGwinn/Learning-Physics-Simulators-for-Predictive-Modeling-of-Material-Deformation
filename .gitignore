@@ -1,0 +1,9 @@
+.conda/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+datasets/
+results/
+*.zip
+# Separate upstream library checkout; not a SEM GUI runtime dependency.
+phasefieldx/

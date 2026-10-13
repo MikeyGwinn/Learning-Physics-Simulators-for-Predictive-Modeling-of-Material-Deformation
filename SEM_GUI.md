@@ -3,8 +3,9 @@
 ## Start the GUI
 
 ```bash
-cd /nfs/hpc/share/scumnioj/PhaseFieldTest
+cd /path/to/your/checkout
 source activate.sh
+python fetch_skarberg.py  # First run only
 python sem_meshing_gui.py --port 8765
 ```
 
@@ -21,8 +22,13 @@ ssh -L 8765:127.0.0.1:8765 YOUR_USER@THE_NODE_RUNNING_THE_GUI
 
 The server binds only to localhost. It uses Python's standard HTTP server,
 Pillow, NumPy, SciPy, scikit-image, Shapely and Gmsh. All are available in
-the workspace `.conda` environment; Shapely was added without changing the
-DOLFINx/PETSc packages. No cloud account or API key is needed.
+the `.conda` environment created automatically from `environment.yml` when
+you source `activate.sh`. The script stops with a nonzero return code if
+installation, activation or import checks fail. Conda is required; the cluster
+Conda module is loaded when available. Use `SEM_PETSC_BACKEND=cpu source
+activate.sh` for CPU-only setup, or `SEM_PETSC_BACKEND=gpu source activate.sh`
+to require CUDA PETSc. The default enables CUDA when the cluster CUDA module
+is available. No cloud account or API key is needed.
 
 ## Dataset and provenance
 

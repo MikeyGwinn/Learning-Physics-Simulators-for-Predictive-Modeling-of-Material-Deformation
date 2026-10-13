@@ -1,0 +1,27 @@
+# Linux SEM GUI runtime. activate.sh installs CUDA PETSc after creating this
+# solver-consistent CPU environment (DOLFINx metadata pins CPU PETSc).
+name: sem-mesh-studio
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - fenics-dolfinx=0.11.0
+  - petsc=3.25.6=real_*
+  - petsc4py=3.25.6
+  - mpi4py=4.1.2
+  - mpich=5.0.1
+  - hdf5=1.14.6=mpi_mpich_*
+  - numpy>=2,<3
+  - scipy>=1.14,<2
+  - pillow>=10,<13
+  - scikit-image=0.26.0
+  - matplotlib-base>=3.9,<4
+  - ffmpeg=9.0.2
+  - libgl
+  - libglu
+  - c-compiler
+  - pip
+  - pip:
+      - gmsh==4.15.2
+      - shapely==2.2.0
