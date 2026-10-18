@@ -19,8 +19,17 @@ def main(argv=None):
     for name, default in asdict(Config()).items():
         command.add_argument("--" + name.replace("_", "-"), type=float, default=argparse.SUPPRESS,
                              help=f"Default: {default}")
+    mesh_command = commands.add_parser("mesh", help="Mesh the tagged matrix/pore representation using Gmsh")
+    mesh_command.add_argument("--sample", type=Path, required=True, help="Directory containing sample.json")
+    mesh_command.add_argument("--format", choices=["material"], default="material")
     args = parser.parse_args(argv)
     try:
+        if args.command == "mesh":
+            from .meshing import mesh_material
+            summary = mesh_material(args.sample)
+            print(f"Saved {summary['triangle_count']} triangles to {args.sample / 'material_mesh'} "
+                  f"(minimum quality {summary['minimum_quality']:.4f})")
+            return 0
         values = json.loads(args.config.read_text(encoding="utf-8")) if args.config else {}
         if not isinstance(values, dict):
             raise ValueError("Configuration must be a JSON object")
@@ -30,7 +39,7 @@ def main(argv=None):
             raise ValueError(f"Output directory already exists: {args.output}")
         sample = generate(config, args.seed)
         write_sample(sample, args.output)
-    except (OSError, ValueError, TypeError) as exc:
+    except (OSError, ValueError, TypeError, KeyError) as exc:
         parser.exit(2, f"error: {exc}\n")
     statistics = sample["statistics"]
     print(f"Saved {statistics['pore_count']} pores to {args.output}")
