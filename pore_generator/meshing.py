@@ -1,15 +1,16 @@
-"""Optional Gmsh material-region meshing and topology checks."""
+"""Optional Gmsh meshing of material regions or a perforated specimen."""
 
+import hashlib
 import json
 import math
 from pathlib import Path
 
-from .export import material_geometry, write_mesh_preview
+from .export import mesh_geometry, write_mesh_preview
 from .generation import Config
 
 
-def mesh_material(sample_directory):
-    """Mesh a saved sample, refusing to overwrite prior mesh results."""
+def mesh_sample(sample_directory, mesh_format="material"):
+    """Mesh saved pores as material regions or holes, preserving existing results."""
     try:
         import gmsh
     except (ImportError, OSError) as exc:
@@ -22,10 +23,10 @@ def mesh_material(sample_directory):
     if sample["schema_version"] != 1 or sample["units"] != "mm":
         raise ValueError("Expected sample schema version 1 with millimeter units")
     Config(**sample["config"])
-    output = sample_directory / "material_mesh"
-    if any((output / name).exists() for name in ("specimen.msh", "mesh_summary.json", "mesh_preview.svg")):
+    geometry = mesh_geometry(sample, mesh_format)
+    output = sample_directory / f"{mesh_format}_mesh"
+    if any((output / name).exists() for name in ("specimen.msh", "mesh_summary.json", "mesh_preview.svg", "geometry.json")):
         raise ValueError(f"Mesh output already exists: {output}. Use a new sample directory.")
-    geometry = material_geometry(sample)
     geo_file = output / "specimen.geo"
     if geo_file.exists() and geo_file.read_text(encoding="utf-8") != geometry:
         raise ValueError("Saved geometry differs from sample.json; use a new sample directory")
@@ -37,32 +38,54 @@ def mesh_material(sample_directory):
         gmsh.option.setNumber("General.NumThreads", 1)
         gmsh.open(str(geo_file))
         gmsh.model.mesh.generate(2)
-        inspect_material_mesh(gmsh, sample)
+        inspect_mesh(gmsh, sample, mesh_format)
         gmsh.write(str(output / "specimen.msh"))
         # Check the serialized mesh as well as the in-memory geometry.
         gmsh.clear()
         gmsh.open(str(output / "specimen.msh"))
-        summary, nodes, triangles = inspect_material_mesh(gmsh, sample)
-        write_mesh_preview(nodes, triangles, sample["config"]["size_mm"], output / "mesh_preview.svg")
+        summary, nodes, triangles = inspect_mesh(gmsh, sample, mesh_format)
+        write_mesh_preview(nodes, triangles, sample["config"]["size_mm"], output / "mesh_preview.svg", mesh_format)
         (output / "mesh_summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False) + "\n",
+                                                encoding="utf-8")
+        if mesh_format == "perforated":
+            size = sample["config"]["size_mm"]
+            metadata = {
+                "units": "mm", "representation": "perforated", "width": size, "height": size,
+                "geometry_hash": hashlib.sha256(geo_file.read_bytes()).hexdigest(),
+                "ready_for_fracture": True,
+                "porosity": summary["hole_area_mm2"] / size ** 2,
+                "explicit_porosity": summary["analytic_explicit_pore_area_mm2"] / size ** 2,
+                "small_porosity": sum(math.pi * p["radius_mm"] ** 2 for p in sample["pores"]
+                                      if p["kind"] == "small") / size ** 2,
+                "total_sample_porosity": sample["statistics"]["achieved_porosity"],
+                "small_pore_correction_applied": False,
+                "mesh_size_mm": sample["config"]["mesh_size_um"] * 0.001,
+            }
+            (output / "geometry.json").write_text(json.dumps(metadata, indent=2, allow_nan=False) + "\n",
                                                 encoding="utf-8")
         return summary
     finally:
         gmsh.finalize()
 
 
-def inspect_material_mesh(gmsh, sample):
-    """Verify triangular regions, a connected matrix, and conforming interfaces."""
+def inspect_mesh(gmsh, sample, mesh_format):
+    """Check regions, matrix connectivity, and shared interfaces or hole edges."""
+    perforated = mesh_format == "perforated"
+    size = sample["config"]["size_mm"]
     has_pores = any(p["kind"] == "explicit" for p in sample["pores"])
+    has_pore_cells = has_pores and not perforated
     expected = {(1, tag) for tag in range(1, 5)} | {(2, 1)}
     if has_pores:
-        expected |= {(1, 5), (2, 2)}
+        expected.add((1, 5))
+    if has_pore_cells:
+        expected.add((2, 2))
     if set(map(tuple, gmsh.model.getPhysicalGroups())) != expected:
         raise ValueError("Mesh physical groups do not match the expected material/boundary tags")
     tags, coordinates, _ = gmsh.model.mesh.getNodes()
     nodes = {int(tag): tuple(coordinates[3*i:3*i+2]) for i, tag in enumerate(tags)}
-    interfaces = {}
+    pore_edges = {}
     boundary_counts = {}
+    pore_boundary_area = 0.0
     for tag in range(1, 6 if has_pores else 5):
         count = 0
         for curve in gmsh.model.getEntitiesForPhysicalGroup(1, tag):
@@ -71,13 +94,23 @@ def inspect_material_mesh(gmsh, sample):
                 raise ValueError("Expected first-order line elements on mesh boundaries")
             for group in groups:
                 for i in range(0, len(group), 2):
-                    edge = tuple(sorted(map(int, group[i:i+2])))
+                    a, b = map(int, group[i:i+2])
+                    edge = tuple(sorted((a, b)))
                     if tag == 5:
-                        interfaces[edge] = []
+                        pore_edges[edge] = []
+                        x1, y1 = nodes[a]
+                        x2, y2 = nodes[b]
+                        pore_boundary_area += (x1*y2 - x2*y1) / 2
+                    else:
+                        axis = 0 if tag in (1, 2) else 1
+                        position = 0 if tag in (1, 3) else size
+                        if any(abs(nodes[node][axis] - position) > size * 1e-10 for node in edge):
+                            raise ValueError(f"Boundary tag {tag} is not on the expected square edge")
                     count += 1
         if not count:
             raise ValueError(f"Boundary/interface tag {tag} has no line elements")
         boundary_counts[tag] = count
+    pore_boundary_area = abs(pore_boundary_area)
     parents = {}
 
     def root(node):
@@ -92,7 +125,7 @@ def inspect_material_mesh(gmsh, sample):
     areas = {1: 0.0, 2: 0.0}
     counts = {1: 0, 2: 0}
     minimum_area = math.inf
-    for region in (1, 2) if has_pores else (1,):
+    for region in (1, 2) if has_pore_cells else (1,):
         for surface in gmsh.model.getEntitiesForPhysicalGroup(2, region):
             types, tag_groups, groups = gmsh.model.mesh.getElements(2, surface)
             if any(t != 2 for t in types):
@@ -117,29 +150,35 @@ def inspect_material_mesh(gmsh, sample):
                         parents[root(c)] = anchor
                     for edge in ((a, b), (b, c), (c, a)):
                         edge = tuple(sorted(edge))
-                        if edge in interfaces:
-                            interfaces[edge].append(region)
+                        if edge in pore_edges:
+                            pore_edges[edge].append(region)
     components = len({root(node) for node in parents})
-    if components != 1 or (has_pores and not counts[2]):
+    if components != 1 or (has_pore_cells and not counts[2]):
         raise ValueError("Mesh must contain one connected matrix and the expected pore regions")
-    if any(sorted(regions) != [1, 2] for regions in interfaces.values()):
-        raise ValueError("Pore interface edges must be shared by one matrix and one pore triangle")
-    size = sample["config"]["size_mm"]
-    if not math.isclose(sum(areas.values()), size ** 2, rel_tol=1e-8):
-        raise ValueError("Meshed region areas do not cover the sample square")
+    expected_regions = [1] if perforated else [1, 2]
+    if any(sorted(regions) != expected_regions for regions in pore_edges.values()):
+        raise ValueError("Pore edges must border one matrix triangle and, for material meshes, one pore triangle")
+    hole_area = pore_boundary_area if perforated else 0.0
+    if not math.isclose(sum(areas.values()) + hole_area, size ** 2, rel_tol=1e-8):
+        raise ValueError("Meshed regions and holes do not cover the sample square")
+    if has_pore_cells and not math.isclose(areas[2], pore_boundary_area, rel_tol=1e-8):
+        raise ValueError("Pore triangle area differs from the area enclosed by pore boundaries")
     quality = min(gmsh.model.mesh.getElementQualities(element_tags, "minSICN"))
     if not math.isfinite(quality) or quality <= 0:
         raise ValueError("Mesh contains nonpositive-quality elements")
     analytic_pore_area = sum(math.pi * p["radius_mm"] ** 2 for p in sample["pores"] if p["kind"] == "explicit")
     summary = {
+        "representation": mesh_format,
         "gmsh_version": gmsh.__version__, "units": "mm", "msh_version": "4.1", "binary": False,
         "node_count": len(nodes), "triangle_count": len(triangles),
         "matrix_triangles": counts[1], "pore_triangles": counts[2],
         "matrix_area_mm2": areas[1], "pore_area_mm2": areas[2],
+        "hole_area_mm2": hole_area,
         "analytic_explicit_pore_area_mm2": analytic_pore_area,
-        "pore_area_relative_error": abs(areas[2] - analytic_pore_area) / analytic_pore_area if analytic_pore_area else 0.0,
+        "pore_area_relative_error": abs(pore_boundary_area - analytic_pore_area) / analytic_pore_area if analytic_pore_area else 0.0,
         "minimum_triangle_area_mm2": minimum_area, "minimum_quality": float(quality),
-        "matrix_components": components, "interface_edges": len(interfaces),
+        "matrix_components": components, "interface_edges": 0 if perforated else len(pore_edges),
+        "pore_boundary_edges": len(pore_edges),
         "boundary_line_counts": boundary_counts,
     }
     return summary, nodes, triangles

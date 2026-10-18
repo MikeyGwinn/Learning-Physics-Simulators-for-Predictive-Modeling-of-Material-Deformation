@@ -15,13 +15,16 @@ def write_sample(sample, output):
         writer.writeheader()
         writer.writerows(sample["pores"])
     (output / "preview.svg").write_text(preview_svg(sample), encoding="utf-8")
-    mesh_dir = output / "material_mesh"
-    mesh_dir.mkdir()
-    (mesh_dir / "specimen.geo").write_text(material_geometry(sample), encoding="utf-8")
+    for mesh_format in ("material", "perforated"):
+        mesh_dir = output / f"{mesh_format}_mesh"
+        mesh_dir.mkdir()
+        (mesh_dir / "specimen.geo").write_text(mesh_geometry(sample, mesh_format), encoding="utf-8")
 
 
-def material_geometry(sample):
-    """Describe matrix and pore surfaces using the same four arcs per circle."""
+def mesh_geometry(sample, mesh_format="material"):
+    """Describe the same circles as tagged material regions or holes."""
+    if mesh_format not in ("material", "perforated"):
+        raise ValueError(f"Unknown mesh format: {mesh_format}")
     size = sample["config"]["size_mm"]
     spacing = sample["config"]["mesh_size_um"] * 0.001
     lines = ["// Lengths in mm; small pores remain in sample.json.",
@@ -33,7 +36,7 @@ def material_geometry(sample):
         lines.append(f"Line({tag}) = {{{tag}, {tag % 4 + 1}}};")
     lines.append("Curve Loop(1) = {1, 2, 3, 4};")
     pore_loops = []
-    interfaces = []
+    pore_curves = []
     for i, pore in enumerate(p for p in sample["pores"] if p["kind"] == "explicit"):
         x, y, r = pore["x_mm"], pore["y_mm"], pore["radius_mm"]
         center = 5 + 5 * i
@@ -46,14 +49,16 @@ def material_geometry(sample):
         loop = i + 2
         lines.append(f"Curve Loop({loop}) = {{{', '.join(map(str, arcs))}}};")
         pore_loops.append(loop)
-        interfaces.extend(arcs)
+        pore_curves.extend(arcs)
     loops = ", ".join(map(str, [1, *pore_loops]))
     lines.extend([f"Plane Surface(1) = {{{loops}}};", 'Physical Surface("matrix", 1) = {1};'])
-    for loop in pore_loops:
-        lines.append(f"Plane Surface({loop}) = {{{loop}}};")
     if pore_loops:
-        lines.append(f'Physical Surface("pores", 2) = {{{", ".join(map(str, pore_loops))}}};')
-        lines.append(f'Physical Curve("interfaces", 5) = {{{", ".join(map(str, interfaces))}}};')
+        if mesh_format == "material":
+            for loop in pore_loops:
+                lines.append(f"Plane Surface({loop}) = {{{loop}}};")
+            lines.append(f'Physical Surface("pores", 2) = {{{", ".join(map(str, pore_loops))}}};')
+        name = "interfaces" if mesh_format == "material" else "pore_boundaries"
+        lines.append(f'Physical Curve("{name}", 5) = {{{", ".join(map(str, pore_curves))}}};')
     for name, tag, curve in [("left", 1, 4), ("right", 2, 2), ("bottom", 3, 1), ("top", 4, 3)]:
         lines.append(f'Physical Curve("{name}", {tag}) = {{{curve}}};')
     return "\n".join(lines) + "\n"
@@ -91,13 +96,15 @@ def preview_svg(sample):
     return "\n".join(lines)
 
 
-def write_mesh_preview(nodes, triangles, size, output):
-    """Render the actual mesh, distinguishing matrix and pore cell tags."""
+def write_mesh_preview(nodes, triangles, size, output, mesh_format="material"):
+    """Render actual triangles; holes remain white in the perforated mesh."""
     scale = 600 / size
+    title = "Tagged material mesh" if mesh_format == "material" else "Perforated mesh"
+    legend = "matrix gray, pores blue" if mesh_format == "material" else "matrix gray, holes white"
     lines = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720">',
-             '<title>Tagged material mesh: matrix gray, pores blue</title>',
+             f'<title>{title}: {legend}</title>',
              '<rect width="720" height="720" fill="white"/>',
-             '<text x="60" y="32" font-family="sans-serif" font-size="20">Tagged material mesh</text>',
+             f'<text x="60" y="32" font-family="sans-serif" font-size="20">{title}</text>',
              '<g stroke="#172b4d" stroke-width="0.15" stroke-linejoin="round">']
     for a, b, c, region in triangles:
         points = " ".join(f"{60 + nodes[n][0] * scale:.6f},{60 + (size - nodes[n][1]) * scale:.6f}"
@@ -105,5 +112,5 @@ def write_mesh_preview(nodes, triangles, size, output):
         color = "#e2e8f0" if region == 1 else "#80b6e6"
         lines.append(f'<polygon points="{points}" fill="{color}"/>')
     lines.extend(['</g>', f'<text x="60" y="692" font-family="sans-serif" font-size="14">'
-                  f'{len(triangles)} triangles | {size:g} mm square | matrix gray, pores blue</text>', '</svg>\n'])
+                  f'{len(triangles)} triangles | {size:g} mm square | {legend}</text>', '</svg>\n'])
     Path(output).write_text("\n".join(lines), encoding="utf-8")

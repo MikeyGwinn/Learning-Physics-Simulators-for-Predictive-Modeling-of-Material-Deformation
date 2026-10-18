@@ -19,16 +19,18 @@ def main(argv=None):
     for name, default in asdict(Config()).items():
         command.add_argument("--" + name.replace("_", "-"), type=float, default=argparse.SUPPRESS,
                              help=f"Default: {default}")
-    mesh_command = commands.add_parser("mesh", help="Mesh the tagged matrix/pore representation using Gmsh")
+    mesh_command = commands.add_parser("mesh", help="Mesh tagged regions, a perforated specimen, or both using Gmsh")
     mesh_command.add_argument("--sample", type=Path, required=True, help="Directory containing sample.json")
-    mesh_command.add_argument("--format", choices=["material"], default="material")
+    mesh_command.add_argument("--format", choices=["material", "perforated", "both"], default="material")
     args = parser.parse_args(argv)
     try:
         if args.command == "mesh":
-            from .meshing import mesh_material
-            summary = mesh_material(args.sample)
-            print(f"Saved {summary['triangle_count']} triangles to {args.sample / 'material_mesh'} "
-                  f"(minimum quality {summary['minimum_quality']:.4f})")
+            from .meshing import mesh_sample
+            formats = ("material", "perforated") if args.format == "both" else (args.format,)
+            for mesh_format in formats:
+                summary = mesh_sample(args.sample, mesh_format)
+                print(f"Saved {summary['triangle_count']} triangles to {args.sample / (mesh_format + '_mesh')} "
+                      f"(minimum quality {summary['minimum_quality']:.4f})")
             return 0
         values = json.loads(args.config.read_text(encoding="utf-8")) if args.config else {}
         if not isinstance(values, dict):
