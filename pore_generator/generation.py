@@ -114,14 +114,4 @@ def generate(config, seed):
             "small_porosity": small_area / domain_area,
             "porosity_overshoot": area / domain_area - config.target_porosity,
         },
-        "assumptions": [
-            "Natural-log radius distribution uses micrometers; pore records use millimeters.",
-            "Radius distribution is truncated below min_radius_um.",
-            "Circular pores do not overlap or touch and remain strictly inside the square.",
-            "clearance_um is the minimum pore-to-pore and pore-to-boundary gap.",
-            "Stop at the first total pore-area crossing; never rescale radii to match porosity.",
-            "Placement and stopping can change the empirical radius distribution.",
-            "Placement rules are provisional choices, not a complete reproduction of the paper.",
-            "Small pores are retained as data; no effective-stiffness correction is applied yet.",
-        ],
     }

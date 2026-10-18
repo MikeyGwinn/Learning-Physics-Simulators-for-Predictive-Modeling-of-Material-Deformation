@@ -14,7 +14,8 @@ Open `pore_generator/results/seed-42/preview.svg` in a browser. Blue circles are
 orange circles are small pores. Output also includes:
 
 - `sample.json`: schema version, seed, configuration, coordinates, every pore,
-  achieved porosity by class, overshoot, and modeling assumptions.
+  achieved porosity by class, and overshoot. Modeling assumptions are documented
+  below rather than duplicated in every sample.
 - `pores.csv`: `id,x_mm,y_mm,radius_mm,kind`, where kind is `explicit` or `small`.
 
 An existing output directory is rejected. Sampling or placement failure exits
