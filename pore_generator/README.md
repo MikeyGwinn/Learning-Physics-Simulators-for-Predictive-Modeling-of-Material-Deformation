@@ -1,96 +1,139 @@
 # Synthetic pore generator
 
-Checkpoint 1 implements synthetic pore generation, saved data, and an SVG preview.
-It uses Python 3.12 or newer and only the Python standard library. Run commands
-from the repository root; no package installation is needed.
+Generate reproducible circular pores in a square sample and export Gmsh geometry
+as tagged material regions or a perforated specimen. Python 3.12 or newer is
+required. Generation uses the standard library; meshing requires Gmsh 4.15.2.
+
+## Directory contents
+
+| Path | Purpose |
+| --- | --- |
+| `generation.py` | Configuration, radius sampling, placement, and porosity statistics |
+| `export.py` | JSON/CSV output, Gmsh geometry, and SVG previews |
+| `meshing.py` | Gmsh mesh generation, inspection, and solver metadata |
+| `__main__.py` | Command-line interface |
+| `examples/` | Example JSON configuration |
+| `tests/` | Generator and mesh correctness checks |
+| `requirements-mesh.txt` | Optional meshing dependency |
+| `results/` | Generated samples and meshes; ignored by Git |
+
+## Usage
+
+Run these commands from the repository root:
 
 ```bash
 python3 -m venv pore_generator/.venv
 source pore_generator/.venv/bin/activate
+python -m pip install -r pore_generator/requirements-mesh.txt
 python -m pore_generator generate --seed 42 --output pore_generator/results/seed-42
+python -m pore_generator mesh --sample pore_generator/results/seed-42 --format both
 ```
 
-Open `pore_generator/results/seed-42/preview.svg` in a browser. Blue circles are explicit pores;
-orange circles are small pores. Output also includes:
+Use `--format material` (the default) or `--format perforated` to mesh one
+representation. Each selected mesh is generated in sequence. Existing samples,
+mesh results, and modified geometry files are not overwritten. Some Linux
+installations also require the system `libGLU` library.
 
-- `sample.json`: schema version, seed, configuration, coordinates, every pore,
-  achieved porosity by class, and overshoot. Modeling assumptions are documented
-  below rather than duplicated in every sample.
-- `pores.csv`: `id,x_mm,y_mm,radius_mm,kind`, where kind is `explicit` or `small`.
-
-An existing output directory is rejected. Sampling or placement failure exits
-with an error before creating an output directory. Seeds reproduce samples for
-the same configuration and Python implementation/version, which are recorded in
-`sample.json`. The saved pore table is the authoritative
-realization for later exports.
-
-### Parameters and conventions
+To use a configuration file:
 
 ```bash
 python -m pore_generator generate --seed 42 --config pore_generator/examples/pore_config.json --output pore_generator/results/config-seed-42
 python -m pore_generator generate --help
 ```
 
-JSON keys match the following table. CLI flags use hyphens, for example
-`--target-porosity 0.15`. Precedence is defaults, then JSON, then individual flags.
+Individual flags override JSON values, which override the defaults. Flags use
+hyphens, for example `--target-porosity 0.15`.
 
-| Parameter | Default | Meaning |
+## Parameters and modeling assumptions
+
+| JSON key | Default | Meaning |
 | --- | --- | --- |
 | `size_mm` | 1.0 | Side length of the square |
 | `radius_mu` | 2.941 | Mean of the natural logarithm of radius in micrometers |
 | `radius_sigma` | 0.703 | Standard deviation of that logarithm |
-| `min_radius_um` | 1.0 | Lower truncation cutoff; smaller draws are resampled |
-| `geometric_radius_um` | 20.0 | Radii at or above this threshold are explicit |
-| `target_porosity` | 0.20 | Target total area fraction, including small pores |
+| `min_radius_um` | 1.0 | Lower radius cutoff; smaller draws are resampled |
+| `geometric_radius_um` | 20.0 | Minimum radius represented geometrically |
+| `target_porosity` | 0.20 | Target area fraction, including small pores |
 | `clearance_um` | 0.0 | Minimum pore-to-pore and pore-to-boundary gap |
-| `mesh_size_um` | 4.0 | Reserved target mesh size for the later mesh exporter |
+| `mesh_size_um` | 4.0 | Target triangle size |
 
-Coordinates and radii in output records are **millimeters**. The origin is at the
-bottom-left, x points right, and y points up. The SVG flips y only for display.
-The radius sampler implements `ln(radius / micrometer) ~ N(2.941, 0.703²)`;
-these are log-space parameters for **radius**, not diameter.
+Defaults use the radius distribution in Chakraborty, Sabharwall, and Carroll
+(2016), *A phase-field approach to model multi-axial and microstructure dependent
+fracture in nuclear grade graphite*, Section 3, Figure 2, and Table 2:
+[doi:10.1016/j.jnucmat.2016.04.006](https://doi.org/10.1016/j.jnucmat.2016.04.006).
+The distribution is `ln(radius / micrometer) ~ N(2.941, 0.703²)`, truncated below
+1 micrometer. These parameters describe radius, not diameter.
 
-The parameter source is Chakraborty, Sabharwall, and Carroll (2016),
-*A phase-field approach to model multi-axial and microstructure dependent fracture
-in nuclear grade graphite*, Section 3, Figure 2, and Table 2:
-<https://doi.org/10.1016/j.jnucmat.2016.04.006>.
+Output coordinates and radii are in **millimeters**, with a bottom-left origin,
+x pointing right, and y pointing up. The SVG previews flip y for display.
 
-### Scientific assumptions and current limits
+Pore centers are sampled uniformly within the permitted interior. Circles stay
+strictly inside the square and do not overlap or touch. Each radius gets up to
+10,000 placement attempts; an unplaceable radius aborts generation rather than
+being replaced or resized. Sampling above the lower cutoff also has a
+10,000-draw limit. Some seeds can fail even at the default porosity.
 
-Circles remain strictly inside the square and do not overlap or touch. For each
-sampled radius, centers are drawn uniformly in the permitted interior until one
-fits. A radius that cannot fit aborts generation; failed placement is not replaced
-with a smaller radius. Placement is limited to 10,000 attempts per pore. Radius
-sampling below the cutoff is also limited to 10,000 draws to reject impractical
-parameter choices.
+Generation stops when total pore area first reaches or exceeds the target.
+Actual porosity and overshoot are recorded. These placement and stopping rules
+can affect the empirical radius distribution and are documented modeling choices.
+A seed reproduces a sample for the same configuration and Python implementation
+and version, recorded in `sample.json`.
 
-Some seeds can fail even at the default target porosity: previously placed pores
-may leave no room for a later large radius. For example, seed 7 fails placement
-under the defaults, while seed 42 succeeds. This follows the fixed-radius policy;
-generation does not silently discard difficult pores. Use another seed or an
-explicitly changed configuration if a sample fails.
+Pores below the geometric cutoff are saved and counted in total porosity, but
+occupy matrix material in both meshes. No small-pore stiffness correction is
+applied. Material-region meshes contain tagged pore cells; perforated meshes
+remove those cells as holes. The exporter assigns no material properties.
 
-Generation stops at the first total pore-area crossing of the target. Radii are
-not rescaled to force an exact porosity. Actual porosity and overshoot are reported;
-small pores contribute to the total. Placement, clearance, cutoff, and stopping
-rules can affect the empirical distribution. These construction rules are
-provisional modeling choices, not a complete reproduction of the paper.
+## Outputs
 
-All small pores are saved, but their effective stiffness correction is not applied.
-Mesh generation is **not implemented yet**. Subsequent review checkpoints will add
-`material_mesh/` with tagged matrix/pore regions, `perforated_mesh/` with large-pore
-holes, and then a small-pore porosity grid. Gmsh will be needed only for meshing.
-There is no fracture solve or claim of validated material behavior at this stage.
+Each sample directory contains:
 
-### Development and checks
+- `sample.json`: configuration, seed, coordinate conventions, pore table, and statistics.
+- `pores.csv`: `id,x_mm,y_mm,radius_mm,kind`, with kind `explicit` or `small`.
+- `preview.svg`: all pores, with explicit pores blue and small pores orange.
+- `material_mesh/specimen.geo`: matrix and pore regions sharing circle boundaries.
+- `perforated_mesh/specimen.geo`: the same explicit pores represented as holes.
 
-This directory contains the generation, export, and CLI modules, along with its
-own `examples/`, `tests/`, and ignored `results/`. Commands below run from the
-repository root. Generated results, local environments, and caches are ignored
-by this directory's `.gitignore`.
+Meshing adds `specimen.msh`, `mesh_summary.json`, and `mesh_preview.svg` to each
+selected mesh directory. Meshes use ASCII MSH 4.1 and first-order triangles.
+The summary reports cell counts, areas, quality, connectivity, boundary counts,
+and pore-area error from approximating circles with straight edges.
+
+| Representation | Surface tags | Curve tags |
+| --- | --- | --- |
+| Material regions | matrix=1, pores=2 | left=1, right=2, bottom=3, top=4, interfaces=5 |
+| Perforated | matrix=1 | left=1, right=2, bottom=3, top=4, hole edges=5 |
+
+Pore-related groups are omitted when there are no explicit pores. Inspection
+checks triangle areas and quality, tags, grip locations, matrix connectivity,
+area coverage, and pore-edge adjacency, both before and after saving the mesh.
+
+## Solver handoff
+
+`perforated_mesh/geometry.json` contains the dimensions, geometry hash, porosity
+fractions, mesh size, and readiness flag expected by John's SEMtoMesh solver.
+`porosity` is the meshed hole fraction; analytic explicit, small, and total sample
+porosities are recorded separately. The geometry hash is SHA256 of the `.geo`
+file, including mesh settings. Readiness indicates that mesh checks passed.
+
+From a SEMtoMesh checkout with its DOLFINx environment active:
+
+```bash
+python simulate_fracture.py --image-mesh /absolute/path/to/perforated_mesh --config /absolute/path/to/fracture_config.json --output results/synthetic-fracture --backend cpu
+```
+
+Set `geometry.width` and `geometry.height` in the solver configuration to the
+sample size (1.0 mm by default), and `mesh.size` to the requested mesh size
+(0.004 mm by default). Material parameters, thickness, fracture length scale,
+and loading are supplied by the solver configuration.
+
+## Correctness checks
 
 ```bash
 python -m unittest discover -s pore_generator/tests -v
 git diff --check
 ```
 
+Generator checks use the standard library. The mesh check covers both
+representations, a solid square, compatibility metadata, and overwrite
+protection. It is skipped when Gmsh is unavailable.
