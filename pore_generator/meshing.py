@@ -9,8 +9,8 @@ from .export import mesh_geometry, write_mesh_preview
 from .generation import Config
 
 
-def mesh_sample(sample_directory, mesh_format="material"):
-    """Mesh saved pores as material regions or holes, preserving existing results."""
+def require_gmsh():
+    """Load the supported Gmsh version before starting a mesh operation."""
     try:
         import gmsh
     except (ImportError, OSError) as exc:
@@ -18,6 +18,29 @@ def mesh_sample(sample_directory, mesh_format="material"):
                          "in your active environment; on Linux its libraries may also require libGLU.") from exc
     if gmsh.__version__ != "4.15.2":
         raise ValueError(f"Expected Gmsh 4.15.2, found {gmsh.__version__}")
+    return gmsh
+
+
+def geometry_metadata(sample, geo_file, summary):
+    """Build the perforated representation's solver handoff metadata."""
+    size = sample["config"]["size_mm"]
+    return {
+        "units": "mm", "representation": "perforated", "width": size, "height": size,
+        "geometry_hash": hashlib.sha256(geo_file.read_bytes()).hexdigest(),
+        "ready_for_fracture": True,
+        "porosity": summary["hole_area_mm2"] / size ** 2,
+        "explicit_porosity": summary["analytic_explicit_pore_area_mm2"] / size ** 2,
+        "small_porosity": sum(math.pi * p["radius_mm"] ** 2 for p in sample["pores"]
+                              if p["kind"] == "small") / size ** 2,
+        "total_sample_porosity": sample["statistics"]["achieved_porosity"],
+        "small_pore_correction_applied": False,
+        "mesh_size_mm": sample["config"]["mesh_size_um"] * 0.001,
+    }
+
+
+def mesh_sample(sample_directory, mesh_format="material"):
+    """Mesh saved pores as material regions or holes, preserving existing results."""
+    gmsh = require_gmsh()
     sample_directory = Path(sample_directory)
     sample = json.loads((sample_directory / "sample.json").read_text(encoding="utf-8"))
     if sample["schema_version"] != 1 or sample["units"] != "mm":
@@ -44,23 +67,12 @@ def mesh_sample(sample_directory, mesh_format="material"):
         gmsh.clear()
         gmsh.open(str(output / "specimen.msh"))
         summary, nodes, triangles = inspect_mesh(gmsh, sample, mesh_format)
+        summary["geometry_hash"] = hashlib.sha256(geo_file.read_bytes()).hexdigest()
         write_mesh_preview(nodes, triangles, sample["config"]["size_mm"], output / "mesh_preview.svg", mesh_format)
         (output / "mesh_summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False) + "\n",
                                                 encoding="utf-8")
         if mesh_format == "perforated":
-            size = sample["config"]["size_mm"]
-            metadata = {
-                "units": "mm", "representation": "perforated", "width": size, "height": size,
-                "geometry_hash": hashlib.sha256(geo_file.read_bytes()).hexdigest(),
-                "ready_for_fracture": True,
-                "porosity": summary["hole_area_mm2"] / size ** 2,
-                "explicit_porosity": summary["analytic_explicit_pore_area_mm2"] / size ** 2,
-                "small_porosity": sum(math.pi * p["radius_mm"] ** 2 for p in sample["pores"]
-                                      if p["kind"] == "small") / size ** 2,
-                "total_sample_porosity": sample["statistics"]["achieved_porosity"],
-                "small_pore_correction_applied": False,
-                "mesh_size_mm": sample["config"]["mesh_size_um"] * 0.001,
-            }
+            metadata = geometry_metadata(sample, geo_file, summary)
             (output / "geometry.json").write_text(json.dumps(metadata, indent=2, allow_nan=False) + "\n",
                                                 encoding="utf-8")
         return summary

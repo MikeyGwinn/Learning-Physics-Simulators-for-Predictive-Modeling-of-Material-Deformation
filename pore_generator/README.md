@@ -12,6 +12,8 @@ required. Generation uses the standard library; meshing requires Gmsh 4.15.2.
 | `export.py` | JSON/CSV output, Gmsh geometry, and SVG previews |
 | `meshing.py` | Gmsh mesh generation, inspection, and solver metadata |
 | `__main__.py` | Command-line interface |
+| `generate_batch.py` | Generate complete samples using consecutive seeds and record rejected seeds |
+| `mesh_batch.py` | Mesh successful batch samples and verify completed outputs before skipping them |
 | `examples/` | Example JSON configuration |
 | `tests/` | Generator and mesh correctness checks |
 | `requirements-mesh.txt` | Optional meshing dependency |
@@ -43,6 +45,57 @@ python -m pore_generator generate --help
 
 Individual flags override JSON values, which override the defaults. Flags use
 hyphens, for example `--target-porosity 0.15`.
+
+## Batch generation
+
+```bash
+python -m pore_generator.generate_batch --count 500 --start-seed 0 --output pore_generator/results/batch-500
+```
+
+`--count` counts successful samples, not pores, and defaults to 500. Seeds start
+at `--start-seed` (default 0) and advance after every attempt. Use `--config`
+with the same JSON keys as single-sample generation. Gmsh is not required.
+
+The output must be a new directory. Successful samples are saved as
+`seed-000000/`, `seed-000001/`, and so on, each containing the standard sample
+outputs and both `.geo` representations. Rejected seeds leave gaps in these
+directory names. Parameters remain fixed across attempts.
+
+`batch.json` records the configuration, Python version, requested count, starting
+seed, run status, and totals. `samples.csv` records every attempted seed, its
+status, relative sample directory, pore counts, achieved porosity, and any error.
+The CSV is flushed after each attempt. Filesystem and unexpected errors stop
+generation and mark the batch failed.
+
+The dataset contains successful placements; rejected seeds and their reasons
+remain in the CSV. There is no limit on how many seeds are attempted, so a
+configuration that cannot succeed will keep running until interrupted. Ctrl+C
+retains completed samples and records, marks the batch interrupted, and exits
+with status 130. Existing batches cannot be resumed.
+
+## Batch meshing
+
+```bash
+python -m pore_generator.mesh_batch --batch pore_generator/results/batch-500 --format perforated
+```
+
+Gmsh 4.15.2 must be installed in the active environment. `--format` accepts
+`perforated` (the default), `material`, or `both`. The script reads successful
+entries from `samples.csv`, including samples retained after interrupted
+generation, and meshes the selected representations sequentially.
+
+Rerunning skips completed outputs after checking the saved geometry, geometry
+hash, mesh inspection results, summary, and perforated compatibility metadata.
+Incomplete or inconsistent outputs are preserved and recorded as failures that
+require manual inspection and cleanup. Mesh summaries created without a geometry
+hash cannot be skipped. No existing mesh is deleted or overwritten.
+
+`meshing.csv` contains the latest invocation's seed, relative sample directory,
+representation, status (`generated`, `skipped`, or `failed`), and error. Rows are
+flushed after each representation. Individual mesh failures are recorded while
+processing continues; missing dependencies and filesystem errors stop the run.
+Any mesh failure produces a nonzero exit status. Ctrl+C exits with status 130
+and retains existing outputs and CSV rows.
 
 ## Parameters and modeling assumptions
 
@@ -96,8 +149,9 @@ Each sample directory contains:
 
 Meshing adds `specimen.msh`, `mesh_summary.json`, and `mesh_preview.svg` to each
 selected mesh directory. Meshes use ASCII MSH 4.1 and first-order triangles.
-The summary reports cell counts, areas, quality, connectivity, boundary counts,
-and pore-area error from approximating circles with straight edges.
+The summary records the geometry hash and reports cell counts, areas, quality,
+connectivity, boundary counts, and pore-area error from approximating circles
+with straight edges.
 
 | Representation | Surface tags | Curve tags |
 | --- | --- | --- |
