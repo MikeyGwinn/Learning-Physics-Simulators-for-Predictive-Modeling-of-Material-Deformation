@@ -1,0 +1,836 @@
+=== Mon Oct 26 09:42:46 PDT 2026 on cn-b05.hpc.engr.oregonstate.edu
+2 channel Terms of Service accepted
+Retrieving notices: - \ done
+Channels:
+ - https://conda.software.inl.gov/public
+ - conda-forge
+ - defaults
+ - nodefaults
+Platform: linux-64
+Collecting package metadata (repodata.json): / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ failed
+
+CondaHTTPError: HTTP 502 Bad Gateway for url <https://conda.software.inl.gov/public/linux-64/repodata.json>
+Elapsed: 00:00.112961
+CF-RAY: a50aeaa6696d7618-SEA
+
+A remote server error occurred when trying to retrieve this URL.
+
+A 500-type error (e.g. 500, 501, 502, 503, etc.) indicates the server failed to
+fulfill a valid request.  The problem may be spurious, and will resolve itself if you
+try your request again.  If the problem persists, consider notifying the maintainer
+of the remote server.
+
+
+
+real	0m7.373s
+user	0m4.538s
+sys	0m1.578s
+=== conda server returned 502; using container
+INFO:    Converting OCI blobs to SIF format
+INFO:    Starting build...
+INFO:    Fetching OCI image...
+INFO:    Extracting OCI image...
+INFO:    Inserting Apptainer configuration...
+INFO:    Creating SIF file...
+
+real	18m59.479s
+user	16m0.811s
+sys	7m44.459s
+code-server
+conduit
+libmesh
+libtorch
+mfem
+moose
+neml2
+openmpi
+petsc
+python
+rh
+uv
+vtk
+wasp
+combined-opt
+exodiff
+hit
+moose-opt
+moose_test-opt
+moose_test_runner
+/opt/moose/share/combined/combined/phase_field_fracture
+sending incremental file list
+./
+testroot
+3d-mortar-projection-tolerancing/
+3d-mortar-projection-tolerancing/test.i
+3d-mortar-projection-tolerancing/test.msh
+3d-mortar-projection-tolerancing/tests
+ACGrGrElasticDrivingForce/
+ACGrGrElasticDrivingForce/bicrystal.i
+ACGrGrElasticDrivingForce/test.tex
+ACGrGrElasticDrivingForce/tests
+ACGrGrElasticDrivingForce/gold/
+ACGrGrElasticDrivingForce/gold/bicrystal_out.e-s003
+CHSplitFlux/
+CHSplitFlux/flux_gb.i
+CHSplitFlux/simple_transient_diffusion_flux.i
+CHSplitFlux/tests
+CHSplitFlux/gold/
+CHSplitFlux/gold/flux_gb_out.e
+CHSplitFlux/gold/simple_transient_diffusion_flux_out.e
+DiffuseCreep/
+DiffuseCreep/strain.i
+DiffuseCreep/strain_gb_relax.i
+DiffuseCreep/stress.cmp
+DiffuseCreep/stress.i
+DiffuseCreep/stress_based_chem_pot.i
+DiffuseCreep/stress_flux_n_gb_relax.i
+DiffuseCreep/tests
+DiffuseCreep/variable_base_eigen_strain.i
+DiffuseCreep/gold/
+DiffuseCreep/gold/strain_gb_relax_out.e
+DiffuseCreep/gold/strain_out.e
+DiffuseCreep/gold/stress_based_chem_pot_out.e
+DiffuseCreep/gold/stress_flux_n_gb_relax_out.e
+DiffuseCreep/gold/stress_out.e
+DiffuseCreep/gold/variable_base_eigen_strain_out.e
+GBDependentTensors/
+GBDependentTensors/gb_property.i
+GBDependentTensors/tests
+GBDependentTensors/gold/
+GBDependentTensors/gold/gb_property_out.e
+ad_cavity_pressure/
+ad_cavity_pressure/3d.e
+ad_cavity_pressure/3d.i
+ad_cavity_pressure/additional_volume.i
+ad_cavity_pressure/initial_temperature.i
+ad_cavity_pressure/multiple_postprocessors.i
+ad_cavity_pressure/negative_volume.i
+ad_cavity_pressure/rz.e
+ad_cavity_pressure/rz.i
+ad_cavity_pressure/tests
+ad_cavity_pressure/gold/
+ad_cavity_pressure/gold/3d_out.e -> ../../cavity_pressure/gold/3d_out.e
+ad_cavity_pressure/gold/additional_volume_out.e
+ad_cavity_pressure/gold/initial_temperature_out.e -> ../../cavity_pressure/gold/initial_temperature_out.e
+ad_cavity_pressure/gold/multiple_postprocessors_out.e -> ../../cavity_pressure/gold/multiple_postprocessors_out.e
+ad_cavity_pressure/gold/rz_out.e -> ../../cavity_pressure/gold/rz_out.e
+adaptive_timestepping/
+adaptive_timestepping/1hex8_10mm_cube.e
+adaptive_timestepping/adapt_tstep_function_change.i
+adaptive_timestepping/adapt_tstep_function_change_restart1.i
+adaptive_timestepping/adapt_tstep_function_change_restart2.i
+adaptive_timestepping/adapt_tstep_function_force_step.i
+adaptive_timestepping/blip.csv
+adaptive_timestepping/tests
+adaptive_timestepping/gold/
+adaptive_timestepping/gold/adapt_tstep_function_change_out.e
+adaptive_timestepping/gold/adapt_tstep_function_change_restart2_out.e
+adaptive_timestepping/gold/adapt_tstep_function_change_restart2_sm_out.e -> adapt_tstep_function_change_restart2_out.e
+adaptive_timestepping/gold/adapt_tstep_function_force_step_out.e
+adaptive_timestepping/gold/adapt_tstep_grow_dtfunc_out.e
+additive_manufacturing/
+additive_manufacturing/check_element_addition.i
+additive_manufacturing/check_element_addition_2D.i
+additive_manufacturing/check_element_addition_by_variable.i
+additive_manufacturing/check_initial_condition.i
+additive_manufacturing/check_stateful_properties.i
+additive_manufacturing/tests
+additive_manufacturing/gold/
+additive_manufacturing/gold/check_element_addition_2D_out.e-s002
+additive_manufacturing/gold/check_element_addition_by_variable_out.e-s002
+additive_manufacturing/gold/check_element_addition_out.e-s002
+additive_manufacturing/gold/check_initial_condition_out.e-s002
+additive_manufacturing/gold/check_stateful_properties_out.e-s002
+axisymmetric_2d3d_solution_function/
+axisymmetric_2d3d_solution_function/2d.e
+axisymmetric_2d3d_solution_function/2d.i
+axisymmetric_2d3d_solution_function/2d.jou
+axisymmetric_2d3d_solution_function/3dy.e
+axisymmetric_2d3d_solution_function/3dy.i
+axisymmetric_2d3d_solution_function/3dy.jou
+axisymmetric_2d3d_solution_function/3dy_scale.e
+axisymmetric_2d3d_solution_function/3dy_scale.jou
+axisymmetric_2d3d_solution_function/3dz.e
+axisymmetric_2d3d_solution_function/3dz.jou
+axisymmetric_2d3d_solution_function/3dz_scale.e
+axisymmetric_2d3d_solution_function/3dz_scale.jou
+axisymmetric_2d3d_solution_function/tests
+axisymmetric_2d3d_solution_function/gold/
+axisymmetric_2d3d_solution_function/gold/2d_out.e
+axisymmetric_2d3d_solution_function/gold/3dy_out.e
+axisymmetric_2d3d_solution_function/gold/3dy_scale_out.e
+axisymmetric_2d3d_solution_function/gold/3dz_out.e
+axisymmetric_2d3d_solution_function/gold/3dz_scale_out.e
+beam_eigenstrain_transfer/
+beam_eigenstrain_transfer/2_beams_new.e
+beam_eigenstrain_transfer/parent_uo_transfer.i
+beam_eigenstrain_transfer/subapp1_uo_transfer.i
+beam_eigenstrain_transfer/subapp2_uo_transfer.i
+beam_eigenstrain_transfer/subapp_err_2.i
+beam_eigenstrain_transfer/subapp_err_3.i
+beam_eigenstrain_transfer/subapp_err_4.i
+beam_eigenstrain_transfer/tests
+beam_eigenstrain_transfer/gold/
+beam_eigenstrain_transfer/gold/parent_uo_transfer_out.e
+break_mesh_interface_contact/
+break_mesh_interface_contact/break_mesh_interface_contact.i
+break_mesh_interface_contact/tests
+break_mesh_interface_contact/gold/
+break_mesh_interface_contact/gold/break_mesh_interface_contact_out.e
+cavity_pressure/
+cavity_pressure/3d.e
+cavity_pressure/3d.i
+cavity_pressure/additional_volume.i
+cavity_pressure/initial_temperature.i
+cavity_pressure/multiple_postprocessors.i
+cavity_pressure/negative_volume.i
+cavity_pressure/rz.e
+cavity_pressure/rz.i
+cavity_pressure/rz_abs_ref.i
+cavity_pressure/tests
+cavity_pressure/gold/
+cavity_pressure/gold/3d_out.e
+cavity_pressure/gold/additional_volume_out.e
+cavity_pressure/gold/initial_temperature_out.e
+cavity_pressure/gold/multiple_postprocessors_out.e
+cavity_pressure/gold/rz_abs_ref_out.e -> rz_out.e
+cavity_pressure/gold/rz_out.e
+combined_plasticity_temperature/
+combined_plasticity_temperature/ad_plasticity_temperature_dep_yield.i
+combined_plasticity_temperature/plasticity_temperature_dep_yield.i
+combined_plasticity_temperature/tests
+combined_plasticity_temperature/gold/
+combined_plasticity_temperature/gold/ad_plasticity_temperature_dep_yield_out.e -> plasticity_temperature_dep_yield_out.e
+combined_plasticity_temperature/gold/plasticity_temperature_dep_yield_out.e
+concentration_dependent_elasticity_tensor/
+concentration_dependent_elasticity_tensor/concentration_dependent_elasticity_tensor.i
+eigenstrain/
+eigenstrain/composite.i
+eigenstrain/inclusion.i
+eigenstrain/tests
+eigenstrain/variable.i
+eigenstrain/variable_cahnhilliard.i
+eigenstrain/variable_finite.i
+eigenstrain/gold/
+eigenstrain/gold/composite_out.e
+eigenstrain/gold/inclusion_out.e
+eigenstrain/gold/variable_cahnhilliard_out.e
+eigenstrain/gold/variable_finite_out.e
+eigenstrain/gold/variable_out.e
+elastic_patch/
+elastic_patch/ad_elastic_patch_plane_strain.i
+elastic_patch/ad_elastic_patch_rspherical.i
+elastic_patch/ad_elastic_patch_rz.i
+elastic_patch/ad_elastic_patch_rz_nonlinear.i
+elastic_patch/elastic_patch_plane_strain.i
+elastic_patch/elastic_patch_rspherical.e
+elastic_patch/elastic_patch_rspherical.i
+elastic_patch/elastic_patch_rz.e
+elastic_patch/elastic_patch_rz.i
+elastic_patch/elastic_patch_rz_nonlinear.i
+elastic_patch/tests
+elastic_patch/gold/
+elastic_patch/gold/ad_elastic_patch_plane_strain_out.e -> elastic_patch_plane_strain_out.e
+elastic_patch/gold/ad_elastic_patch_rspherical_out.e -> elastic_patch_rspherical_out.e
+elastic_patch/gold/ad_elastic_patch_rz_nonlinear_out.e -> elastic_patch_rz_nonlinear_out.e
+elastic_patch/gold/ad_elastic_patch_rz_out.e -> elastic_patch_rz_out.e
+elastic_patch/gold/elastic_patch_plane_strain_large_strain_out.e
+elastic_patch/gold/elastic_patch_plane_strain_out.e
+elastic_patch/gold/elastic_patch_rspherical_out.e
+elastic_patch/gold/elastic_patch_rz_large_strain_out.e
+elastic_patch/gold/elastic_patch_rz_nonlinear_out.e
+elastic_patch/gold/elastic_patch_rz_out.e
+elastic_thermal_patch/
+elastic_thermal_patch/ad_elastic_thermal_weak_plane_stress_jacobian.i
+elastic_thermal_patch/elastic_thermal_jacobian_rz_smp.i
+elastic_thermal_patch/elastic_thermal_patch.cmp
+elastic_thermal_patch/elastic_thermal_patch.i
+elastic_thermal_patch/elastic_thermal_patch_rz.i
+elastic_thermal_patch/elastic_thermal_patch_rz_smp.i
+elastic_thermal_patch/elastic_thermal_patch_rz_test.e
+elastic_thermal_patch/elastic_thermal_patch_test.e
+elastic_thermal_patch/elastic_thermal_weak_plane_stress_jacobian.i
+elastic_thermal_patch/tests
+elastic_thermal_patch/gold/
+elastic_thermal_patch/gold/elastic_thermal_jacobian_rz_smp_out.e
+elastic_thermal_patch/gold/elastic_thermal_patch_out.e
+elastic_thermal_patch/gold/elastic_thermal_patch_rz_out.e
+elastic_thermal_patch/gold/elastic_thermal_patch_rz_smp_out.e
+electromagnetic_joule_heating/
+electromagnetic_joule_heating/ADJouleHeatingSource_MMS.py
+electromagnetic_joule_heating/JouleHeatingHeatGeneratedAux_MMS.py
+electromagnetic_joule_heating/aux_microwave_heating.i
+electromagnetic_joule_heating/aux_microwave_heating_convergence.py
+electromagnetic_joule_heating/copper_wire.geo
+electromagnetic_joule_heating/copper_wire.msh
+electromagnetic_joule_heating/fusing_current_through_copper_wire.i
+electromagnetic_joule_heating/microwave_heating.i
+electromagnetic_joule_heating/microwave_heating_convergence.py
+electromagnetic_joule_heating/tests
+electromagnetic_joule_heating/gold/
+electromagnetic_joule_heating/gold/aux_microwave_heating_convergence.csv
+electromagnetic_joule_heating/gold/aux_microwave_heating_out.e
+electromagnetic_joule_heating/gold/fusing_current_through_copper_wire_out.e
+electromagnetic_joule_heating/gold/microwave_heating_convergence.csv
+electromagnetic_joule_heating/gold/microwave_heating_out.e
+evolving_mass_density/
+evolving_mass_density/elastic_patch.e
+evolving_mass_density/elastic_patch_rz.e
+evolving_mass_density/expand_compress_test_tensors.i
+evolving_mass_density/rz_tensors.i
+evolving_mass_density/shear_test_tensors.i
+evolving_mass_density/tests
+evolving_mass_density/uniform_expand_compress_test_tensors.i
+evolving_mass_density/gold/
+evolving_mass_density/gold/expand_compress_x_test_out.e
+evolving_mass_density/gold/expand_compress_y_test_out.e
+evolving_mass_density/gold/expand_compress_z_test_out.e
+evolving_mass_density/gold/rz_out.e
+evolving_mass_density/gold/shear_x_test_out.e
+evolving_mass_density/gold/shear_y_test_out.e
+evolving_mass_density/gold/shear_z_test_out.e
+evolving_mass_density/gold/uniform_expand_compress_test_out.e
+fdp_geometric_coupling/
+fdp_geometric_coupling/fdp_geometric_coupling.i
+fdp_geometric_coupling/tests
+fdp_geometric_coupling/twoBlocksContactDiceSecondary2OffsetGap.e
+fdp_geometric_coupling/gold/
+fdp_geometric_coupling/gold/fdp_geometric_coupling_out.e
+feature_volume_fraction/
+feature_volume_fraction/Avrami.i
+feature_volume_fraction/feature_volume_fraction.i
+feature_volume_fraction/tests
+feature_volume_fraction/gold/
+feature_volume_fraction/gold/Avrami_out.csv
+feature_volume_fraction/gold/feature_volume_fraction_out.csv
+gap_heat_transfer_convex/
+gap_heat_transfer_convex/gap_heat_transfer_convex.e
+gap_heat_transfer_convex/gap_heat_transfer_convex.i
+gap_heat_transfer_convex/gap_heat_transfer_convex_gap_offsets.e
+gap_heat_transfer_convex/gap_heat_transfer_convex_gap_offsets.i
+gap_heat_transfer_convex/gap_heat_transfer_convex_test.e
+gap_heat_transfer_convex/tests
+gap_heat_transfer_convex/gold/
+gap_heat_transfer_convex/gold/gap_heat_transfer_convex_gap_offsets_out.e
+gap_heat_transfer_convex/gold/gap_heat_transfer_convex_out.e
+gap_heat_transfer_jac/
+gap_heat_transfer_jac/tests
+gap_heat_transfer_jac/two_blocks.e
+gap_heat_transfer_jac/two_blocks.i
+gap_heat_transfer_jac/gold/
+gap_heat_transfer_jac/gold/two_blocks_out.e
+gap_heat_transfer_mortar/
+gap_heat_transfer_mortar/finite-2d-rz/
+gap_heat_transfer_mortar/finite-2d-rz/finite.i
+gap_heat_transfer_mortar/finite-2d-rz/finite_action.i
+gap_heat_transfer_mortar/finite-2d-rz/finite_action_al.i
+gap_heat_transfer_mortar/finite-2d-rz/tests
+gap_heat_transfer_mortar/finite-2d-rz/gold/
+gap_heat_transfer_mortar/finite-2d-rz/gold/finite_al.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/first_high_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/first_high_k_action.csv -> first_high_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/first_low_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/first_low_k_action.csv -> first_low_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/second_high_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/second_high_k_action.csv -> second_high_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/second_low_k.csv
+gap_heat_transfer_mortar/finite-2d-rz/gold/second_low_k_action.csv -> second_low_k.csv
+gap_heat_transfer_mortar/finite-2d/
+gap_heat_transfer_mortar/finite-2d/closed_gap_thermomechanical_mortar_contact.i
+gap_heat_transfer_mortar/finite-2d/finite.i
+gap_heat_transfer_mortar/finite-2d/finite_action.i
+gap_heat_transfer_mortar/finite-2d/finite_action_rr.i
+gap_heat_transfer_mortar/finite-2d/finite_rr.i
+gap_heat_transfer_mortar/finite-2d/tests
+gap_heat_transfer_mortar/finite-2d/varied_pressure_thermomechanical_mortar.i
+gap_heat_transfer_mortar/finite-2d/gold/
+gap_heat_transfer_mortar/finite-2d/gold/closed_gap_thermomechanical_mortar_contact_out.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_high_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_high_k_action.csv -> first_high_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_low_k_action.csv -> first_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_low_k_action_rr.csv -> first_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/first_low_k_rr.csv -> first_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/second_high_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/second_high_k_action.csv -> second_high_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/second_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/second_low_k_action.csv -> second_low_k.csv
+gap_heat_transfer_mortar/finite-2d/gold/varied_pressure_thermomechanical_mortar_out.csv
+gap_heat_transfer_mortar/small-2d-rz/
+gap_heat_transfer_mortar/small-2d-rz/small.i
+gap_heat_transfer_mortar/small-2d-rz/tests
+gap_heat_transfer_mortar/small-2d-rz/gold/
+gap_heat_transfer_mortar/small-2d-rz/gold/first_high_k.csv
+gap_heat_transfer_mortar/small-2d-rz/gold/first_low_k.csv
+gap_heat_transfer_mortar/small-2d-rz/gold/second_high_k.csv
+gap_heat_transfer_mortar/small-2d-rz/gold/second_low_k.csv
+gap_heat_transfer_mortar/small-2d/
+gap_heat_transfer_mortar/small-2d/closed_gap_pressure_dependent_thermal_contact.i
+gap_heat_transfer_mortar/small-2d/multi_component_mortar_thermal_conduction.i
+gap_heat_transfer_mortar/small-2d/open_gap_pressure_dependent.i
+gap_heat_transfer_mortar/small-2d/small.i
+gap_heat_transfer_mortar/small-2d/tests
+gap_heat_transfer_mortar/small-2d/gold/
+gap_heat_transfer_mortar/small-2d/gold/closed_gap_pressure_dependent_thermal_contact_out.csv
+gap_heat_transfer_mortar/small-2d/gold/first_high_k.csv
+gap_heat_transfer_mortar/small-2d/gold/first_low_k.csv
+gap_heat_transfer_mortar/small-2d/gold/multi_component_mortar_thermal_conduction_out.csv
+gap_heat_transfer_mortar/small-2d/gold/open_gap_pressure_dependent_out.csv
+gap_heat_transfer_mortar/small-2d/gold/second_high_k.csv
+gap_heat_transfer_mortar/small-2d/gold/second_low_k.csv
+generalized_plane_strain_tm_contact/
+generalized_plane_strain_tm_contact/2squares.e
+generalized_plane_strain_tm_contact/2squares.jou
+generalized_plane_strain_tm_contact/generalized.exodiff
+generalized_plane_strain_tm_contact/generalized_plane_strain_tm_contact.i
+generalized_plane_strain_tm_contact/out_of_plane_pressure.i
+generalized_plane_strain_tm_contact/tests
+generalized_plane_strain_tm_contact/gold/
+generalized_plane_strain_tm_contact/gold/generalized_plane_strain_tm_contact_out.e
+generalized_plane_strain_tm_contact/gold/out_of_plane_pressure_out.e
+grain_texture/
+grain_texture/EulerAngle2RGBAction.i
+grain_texture/EulerAngleProvider2RGBAux_bicrystal.i
+grain_texture/grain_texture_test_1.i
+grain_texture/grain_texture_test_2.i
+grain_texture/grn_3_rand_2D.tex
+grain_texture/random_grain_orientation.i
+grain_texture/test.tex
+grain_texture/tests
+grain_texture/gold/
+grain_texture/gold/EulerAngle2RGBAction_out.e
+grain_texture/gold/EulerAngleProvider2RGBAux_bicrystal_out.e
+grain_texture/gold/grain_texture_test_1_out_textureInfo_0001.csv
+grain_texture/gold/grain_texture_test_2_out_textureInfo_0001.csv
+grain_texture/gold/random_grain_orientation_out.e
+gravity/
+gravity/gravity.i
+gravity/gravity_2D.e
+gravity/gravity_hex20.i
+gravity/gravity_hex20_test.e
+gravity/gravity_qp_select.i
+gravity/gravity_rz.i
+gravity/gravity_rz_quad8.cmp
+gravity/gravity_rz_quad8.i
+gravity/gravity_rz_quad8_test.e
+gravity/gravity_rz_test.e
+gravity/gravity_test.e
+gravity/tests
+gravity/gold/
+gravity/gold/gravity_hex20_out.e
+gravity/gold/gravity_out.e
+gravity/gold/gravity_qp_select_out.e
+gravity/gold/gravity_rz_out.e
+gravity/gold/gravity_rz_quad8_out.e
+heat_conduction_xfem/
+heat_conduction_xfem/heat.i
+heat_conduction_xfem/tests
+heat_conduction_xfem/gold/
+heat_conduction_xfem/gold/heat_out.e
+heat_convection/
+heat_convection/heat_convection_3d_mesh.e
+heat_convection/heat_convection_3d_test.i
+heat_convection/heat_convection_3d_tf_test.i
+heat_convection/heat_convection_function.i
+heat_convection/heat_convection_rz_mesh.e
+heat_convection/heat_convection_rz_test.i
+heat_convection/heat_convection_rz_tf_test.i
+heat_convection/patch_3d.e
+heat_convection/tests
+heat_convection/gold/
+heat_convection/gold/heat_convection_function_out.e
+heat_convection/gold/out_3d.e
+heat_convection/gold/out_3d_tf.e
+heat_convection/gold/out_rz.e
+heat_convection/gold/out_rz_tf.e
+inelastic_strain/
+inelastic_strain/creep/
+inelastic_strain/creep/creep_nl1.i
+inelastic_strain/creep/one_elem2.e
+inelastic_strain/creep/tests
+inelastic_strain/creep/gold/
+inelastic_strain/creep/gold/creep_nl1_out.e
+inelastic_strain/elas_plas/
+inelastic_strain/elas_plas/elas_plas_nl1.i
+inelastic_strain/elas_plas/elas_plas_nl1_cycle.i
+inelastic_strain/elas_plas/one_elem2.e
+inelastic_strain/elas_plas/plot_cycled_strain.py
+inelastic_strain/elas_plas/plot_cycled_stress.py
+inelastic_strain/elas_plas/tests
+inelastic_strain/elas_plas/gold/
+inelastic_strain/elas_plas/gold/elas_plas_nl1_6e-5_out.e -> elas_plas_nl1_out.e
+inelastic_strain/elas_plas/gold/elas_plas_nl1_cycle_8e-5_out.e -> elas_plas_nl1_cycle_out.e
+inelastic_strain/elas_plas/gold/elas_plas_nl1_cycle_out.e
+inelastic_strain/elas_plas/gold/elas_plas_nl1_out.e
+internal_volume/
+internal_volume/hex20.i
+internal_volume/hex8.i
+internal_volume/rspherical.i
+internal_volume/rz.i
+internal_volume/rz_cone.i
+internal_volume/rz_displaced.i
+internal_volume/rz_displaced_quad8.i
+internal_volume/rz_quad8.i
+internal_volume/tests
+internal_volume/gold/
+internal_volume/gold/hex20_out.csv
+internal_volume/gold/hex8_out.csv
+internal_volume/gold/rspherical_out.csv
+internal_volume/gold/rz2_out.csv -> rz_out.csv
+internal_volume/gold/rz_cone_out.csv
+internal_volume/gold/rz_displaced_out.csv
+internal_volume/gold/rz_displaced_quad8_out.csv
+internal_volume/gold/rz_out.csv
+internal_volume/gold/rz_quad8_out.csv
+internal_volume/meshes/
+internal_volume/meshes/hex20.e
+internal_volume/meshes/hex8.e
+internal_volume/meshes/rspherical.e
+internal_volume/meshes/rz.e
+internal_volume/meshes/rz_cone.e
+internal_volume/meshes/rz_displaced.e
+internal_volume/meshes/rz_displaced_quad8.e
+internal_volume/meshes/rz_quad8.e
+j2_plasticity_vs_LSH/
+j2_plasticity_vs_LSH/j2_hard1_mod.i
+j2_plasticity_vs_LSH/j2_hard1_mod_optimised.i
+j2_plasticity_vs_LSH/j2_hard1_mod_small_strain.i
+j2_plasticity_vs_LSH/tests
+j2_plasticity_vs_LSH/gold/
+j2_plasticity_vs_LSH/gold/LSH_mod_out.csv
+j2_plasticity_vs_LSH/gold/j2_hard1_mod_out.csv
+j2_plasticity_vs_LSH/necking/
+j2_plasticity_vs_LSH/necking/j2_hard1_necking.i
+j2_plasticity_vs_LSH/necking/j2_hard1_neckingRZ.i
+j2_plasticity_vs_LSH/necking/necking_quad4.e
+linear_elasticity/
+linear_elasticity/applied_strain.i
+linear_elasticity/extra_stress.i
+linear_elasticity/linear_anisotropic_material.i
+linear_elasticity/linear_elastic_material.i
+linear_elasticity/tensor.i
+linear_elasticity/tests
+linear_elasticity/thermal_expansion.i
+linear_elasticity/gold/
+linear_elasticity/gold/applied_strain_out.e
+linear_elasticity/gold/extra_stress_out.e
+linear_elasticity/gold/linear_anisotropic_material_out.e
+linear_elasticity/gold/linear_elastic_material_out.e
+linear_elasticity/gold/tensor_out.e
+linear_elasticity/gold/thermal_expansion_out.e
+misc/
+misc/re_init_face.i
+misc/tests
+multiphase_mechanics/
+multiphase_mechanics/elasticenergymaterial.i
+multiphase_mechanics/gradientcomponent.i
+multiphase_mechanics/multiphasestress.i
+multiphase_mechanics/nonsplit_gradderiv.i
+multiphase_mechanics/nonsplit_gradderiv_action.i
+multiphase_mechanics/simpleeigenstrain.i
+multiphase_mechanics/tests
+multiphase_mechanics/twophasestress.i
+multiphase_mechanics/gold/
+multiphase_mechanics/gold/elasticenergymaterial_out.e
+multiphase_mechanics/gold/gradientcomponent_out.e
+multiphase_mechanics/gold/multiphasestress_out.e
+multiphase_mechanics/gold/nonsplit_gradderiv_out.e
+multiphase_mechanics/gold/simpleeigenstrain_out.e
+multiphase_mechanics/gold/twophasestress_out.e
+nodal_patch_recovery/
+nodal_patch_recovery/npr_with_lower_domains.i
+nodal_patch_recovery/tests
+nodal_patch_recovery/gold/
+nodal_patch_recovery/gold/npr_with_lower_domains_out.csv
+optimization/
+optimization/compliance_sensitivity/
+optimization/compliance_sensitivity/2d_mbb.i
+optimization/compliance_sensitivity/2d_mbb_pde.i
+optimization/compliance_sensitivity/2d_mbb_pde_amr.i
+optimization/compliance_sensitivity/2d_mmb_2material.i
+optimization/compliance_sensitivity/2d_mmb_2material_cost.i
+optimization/compliance_sensitivity/2d_mmb_2material_cost_initial.i
+optimization/compliance_sensitivity/3d_mbb.i
+optimization/compliance_sensitivity/orderedSimp3MatTest.i
+optimization/compliance_sensitivity/paper_three_materials_test.i
+optimization/compliance_sensitivity/tests
+optimization/compliance_sensitivity/thermal_test.i
+optimization/compliance_sensitivity/three_materials_thermal.i
+optimization/compliance_sensitivity/gold/
+optimization/compliance_sensitivity/gold/2d_mbb_out.csv
+optimization/compliance_sensitivity/gold/2d_mbb_pde_amr_out.csv
+optimization/compliance_sensitivity/gold/2d_mbb_pde_out.csv
+optimization/compliance_sensitivity/gold/2d_mmb_2material_cost_initial_out.csv
+optimization/compliance_sensitivity/gold/3d_mbb_out.csv
+optimization/compliance_sensitivity/gold/paper_three_materials_test_out.csv
+optimization/compliance_sensitivity/gold/thermal_test_out.e
+optimization/compliance_sensitivity/gold/three_materials_thermal_out.csv
+optimization/invOpt_bc_convective/
+optimization/invOpt_bc_convective/adjoint.i
+optimization/invOpt_bc_convective/forward.i
+optimization/invOpt_bc_convective/main.i
+optimization/invOpt_bc_convective/tests
+optimization/invOpt_bc_convective/gold/
+optimization/invOpt_bc_convective/gold/forward_vertical_0001.csv
+optimization/invOpt_elasticity_modular/
+optimization/invOpt_elasticity_modular/elasticity.i
+optimization/invOpt_elasticity_modular/forward.i
+optimization/invOpt_elasticity_modular/grad.i
+optimization/invOpt_elasticity_modular/main.i
+optimization/invOpt_elasticity_modular/tests
+optimization/invOpt_elasticity_modular/gold/
+optimization/invOpt_elasticity_modular/gold/main_out_OptimizationReporter_0001.csv
+optimization/invOpt_mechanics/
+optimization/invOpt_mechanics/adjoint.i
+optimization/invOpt_mechanics/forward.i
+optimization/invOpt_mechanics/forward_and_adjoint.i
+optimization/invOpt_mechanics/main.i
+optimization/invOpt_mechanics/main_auto_adjoint.i
+optimization/invOpt_mechanics/tests
+optimization/invOpt_mechanics/gold/
+optimization/invOpt_mechanics/gold/main_auto_adjoint_out_OptimizationReporter_0001.csv
+optimization/invOpt_mechanics/gold/main_out_OptimizationReporter_0001.csv
+optimization/invOpt_nonlinear/
+optimization/invOpt_nonlinear/adjoint.i
+optimization/invOpt_nonlinear/forward.i
+optimization/invOpt_nonlinear/homogeneous_forward.i
+optimization/invOpt_nonlinear/main.i
+optimization/invOpt_nonlinear/simulation.i
+optimization/invOpt_nonlinear/tests
+optimization/invOpt_nonlinear/gold/
+optimization/invOpt_nonlinear/gold/main_out_OptimizationReporter_0001.csv
+optimization/optimization_density_update/
+optimization/optimization_density_update/tests
+optimization/optimization_density_update/top_opt_2d.i
+optimization/optimization_density_update/top_opt_2d_pde_filter.i
+optimization/optimization_density_update/top_opt_3d.i
+optimization/optimization_density_update/top_opt_3d_pde_filter.i
+optimization/optimization_density_update/gold/
+optimization/optimization_density_update/gold/top_opt_2d_out.e
+optimization/optimization_density_update/gold/top_opt_2d_pde_filter_out.e
+optimization/optimization_density_update/gold/top_opt_3d_out.e
+optimization/optimization_density_update/gold/top_opt_3d_pde_filter_out.e
+optimization/thermal_sensitivity/
+optimization/thermal_sensitivity/2d_root.i
+optimization/thermal_sensitivity/tests
+optimization/thermal_sensitivity/gold/
+optimization/thermal_sensitivity/gold/2d_root_out.csv
+phase_field_contact_angle/
+phase_field_contact_angle/contact_angle.i
+phase_field_contact_angle/tests
+phase_field_contact_angle/gold/
+phase_field_contact_angle/gold/contact_angle_csv.csv
+phase_field_fracture/
+phase_field_fracture/crack2d_aniso.i
+phase_field_fracture/crack2d_aniso_cleavage_plane.i
+phase_field_fracture/crack2d_aniso_hist_false.i
+phase_field_fracture/crack2d_computeCrackedStress_finitestrain_elastic.i
+phase_field_fracture/crack2d_computeCrackedStress_finitestrain_plastic.i
+phase_field_fracture/crack2d_computeCrackedStress_smallstrain.i
+phase_field_fracture/crack2d_iso.i
+phase_field_fracture/crack2d_iso_with_pressure.i
+phase_field_fracture/crack2d_iso_wo_time.i
+phase_field_fracture/crack2d_linear_fracture_energy.i
+phase_field_fracture/crack2d_no_split.i
+phase_field_fracture/crack2d_vi_solver.i
+phase_field_fracture/crack2d_vol_dev.i
+phase_field_fracture/tests
+phase_field_fracture/void2d_iso.i
+phase_field_fracture/void2d_mesh.xda
+phase_field_fracture/gold/
+phase_field_fracture/gold/crack2d_aniso_hist_false_out.e
+phase_field_fracture/gold/crack2d_aniso_out.e
+phase_field_fracture/gold/crack2d_computeCrackedStress_finitestrain_elastic_out.e
+phase_field_fracture/gold/crack2d_computeCrackedStress_finitestrain_plastic_out.e
+phase_field_fracture/gold/crack2d_computeCrackedStress_smallstrain_out.e
+phase_field_fracture/gold/crack2d_iso_out.e
+phase_field_fracture/gold/crack2d_iso_with_pressure_out.e
+phase_field_fracture/gold/crack2d_iso_wo_time_out.e
+phase_field_fracture/gold/crack2d_linear_fracture_energy_out.e
+phase_field_fracture/gold/crack2d_no_split_out.e
+phase_field_fracture/gold/crack2d_vi_solver_out.e
+phase_field_fracture/gold/crack2d_vol_dev_out.e
+phase_field_fracture/gold/void2d_iso_out.e
+phase_field_fracture_viscoplastic/
+phase_field_fracture_viscoplastic/crack2d.i
+phase_field_fracture_viscoplastic/crack_mesh.e
+phase_field_fracture_viscoplastic/tests
+phase_field_fracture_viscoplastic/gold/
+phase_field_fracture_viscoplastic/gold/crack2d_out.e
+power_law_hardening/
+power_law_hardening/ADPowerLawHardening.i
+power_law_hardening/PowerLawHardening.i
+power_law_hardening/tests
+power_law_hardening/gold/
+power_law_hardening/gold/PowerLawHardening_out.e
+reference_residual/
+reference_residual/contact.i
+reference_residual/tests
+reference_residual/gold/
+reference_residual/gold/ad_contact_custom_residual_out.csv -> ad_contact_out.csv
+reference_residual/gold/ad_contact_out.csv
+reference_residual/gold/ad_contact_scaled_out.csv -> ad_contact_out.csv
+reference_residual/gold/contact_custom_residual_out.csv -> contact_out.csv
+reference_residual/gold/contact_out.csv
+reference_residual/gold/contact_scaled_out.csv -> contact_out.csv
+restart-transient-from-ss-with-stateful/
+restart-transient-from-ss-with-stateful/parent_ss.i
+restart-transient-from-ss-with-stateful/parent_tr.i
+restart-transient-from-ss-with-stateful/sub_ss.i
+restart-transient-from-ss-with-stateful/sub_tr.i
+restart-transient-from-ss-with-stateful/tests
+restart-transient-from-ss-with-stateful/gold/
+restart-transient-from-ss-with-stateful/gold/parent_ss_out.e
+restart-transient-from-ss-with-stateful/gold/parent_ss_out_bison0.e
+restart-transient-from-ss-with-stateful/gold/parent_tr_out.e
+restart-transient-from-ss-with-stateful/gold/parent_tr_out_bison0.e
+stateful_mortar_constraints/
+stateful_mortar_constraints/stateful_mortar_npr.i
+stateful_mortar_constraints/tests
+stateful_mortar_constraints/gold/
+stateful_mortar_constraints/gold/stateful_mortar_npr_out.csv
+subchannel_thm_coupling/
+subchannel_thm_coupling/3D.i
+subchannel_thm_coupling/THM_SCM_coupling.i
+subchannel_thm_coupling/THM_SCM_coupling_pump.i
+subchannel_thm_coupling/pin_power_profile19.txt
+subchannel_thm_coupling/subchannel.i
+subchannel_thm_coupling/tests
+subchannel_thm_coupling/gold/
+subchannel_thm_coupling/gold/THM_SCM_coupling_out.csv
+subchannel_thm_coupling/gold/THM_SCM_coupling_out_subchannel0.csv
+subchannel_thm_coupling/gold/THM_SCM_coupling_pump_out.csv
+subchannel_thm_coupling/gold/THM_SCM_coupling_pump_out_subchannel0.csv
+subchannel_thm_coupling/gold/subchannel_out.csv
+surface_tension_KKS/
+surface_tension_KKS/surface_tension_KKS.i
+surface_tension_KKS/surface_tension_VDWgas.i
+surface_tension_KKS/tests
+surface_tension_KKS/gold/
+surface_tension_KKS/gold/surface_tension_KKS_out.e
+surface_tension_KKS/gold/surface_tension_VDWgas_out.e
+thermal_conductivity_temperature_function_test/
+thermal_conductivity_temperature_function_test/fe_patch.e
+thermal_conductivity_temperature_function_test/tests
+thermal_conductivity_temperature_function_test/thermal_conductivity_temperature_function_test.i
+thermal_conductivity_temperature_function_test/gold/
+thermal_conductivity_temperature_function_test/gold/out.e
+thermal_elastic/
+thermal_elastic/ad-thermal_elastic.i
+thermal_elastic/derivatives.i
+thermal_elastic/tests
+thermal_elastic/thermal_elastic.e
+thermal_elastic/thermal_elastic.i
+thermal_elastic/gold/
+thermal_elastic/gold/ad-thermal_elastic_out.e -> thermal_elastic_out.e
+thermal_elastic/gold/thermal_elastic_out.e
+thermal_strain/
+thermal_strain/tests
+thermal_strain/thermal_strain.i
+thermal_strain/thermal_strain_test.e
+thermal_strain/gold/
+thermal_strain/gold/thermal_strain_out.e
+thermo_mech/
+thermo_mech/ad-thermo_mech.i
+thermo_mech/ad-youngs_modulus_function_temp.i
+thermo_mech/cube.e
+thermo_mech/tests
+thermo_mech/thermo_mech.cmp
+thermo_mech/thermo_mech.i
+thermo_mech/thermo_mech_smp.i
+thermo_mech/youngs_modulus_function_temp.i
+thermo_mech/gold/
+thermo_mech/gold/ad-thermo_mech_out.e -> thermo_mech_out.e
+thermo_mech/gold/ad-youngs_modulus_function_temp_out.e -> youngs_modulus_function_temp_out.e
+thermo_mech/gold/thermo_mech_out.e
+thermo_mech/gold/thermo_mech_smp_out.e
+thermo_mech/gold/youngs_modulus_function_temp_out.e
+umat/
+umat/gap_heat_transfer_mesh.e
+umat/gap_heat_transfer_umat.i
+umat/tests
+umat/gold/
+umat/gold/gap_heat_transfer_umat_out.e
+
+sent 16,863,296 bytes  received 11,135 bytes  6,749,772.40 bytes/sec
+total size is 16,819,753  speedup is 1.00
+Directory successfully copied into ./combined/combined/
+Working Directory: /nfs/hpc/share/brockert/capstone/moose/combined/combined
+Running Command: /opt/moose/bin/moose_test_runner -j 8 --re=phase_field_fracture
+Traceback (most recent call last):
+  File "/opt/moose/share/moose/python/pyhit/__init__.py", line 13, in <module>
+    import hit
+ImportError: /opt/moose/share/moose/python/hit.so: undefined symbol: PyThreadState_GetUnchecked
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/moose/share/moose/python/pyhit/__init__.py", line 18, in <module>
+    import hit
+ImportError: /opt/moose/share/moose/python/hit.so: undefined symbol: PyThreadState_GetUnchecked
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/moose/bin/moose_test_runner", line 39, in <module>
+    from TestHarness import TestHarness
+  File "/opt/moose/share/moose/python/TestHarness/__init__.py", line 9, in <module>
+    from .TestHarness import TestHarness
+  File "/opt/moose/share/moose/python/TestHarness/TestHarness.py", line 29, in <module>
+    import pyhit
+  File "/opt/moose/share/moose/python/pyhit/__init__.py", line 21, in <module>
+    subprocess.run(["make", "hit"], cwd=moose_test_dir)
+  File "/usr/lib64/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib64/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/opt/moose/share/moose/test'
+Python 3.14.6
+[31mphase_field_fracture.crack2d_vi_solver: [0m
+[31mphase_field_fracture.crack2d_vi_solver: [0mTester failed, reason: ERRMSG
+[31mphase_field_fracture.crack2d_vi_solver: [0m
+[31mphase_field_fracture.crack2d_vi_solver: [0m################################################################################
+[31mphase_field_fracture.crack2d_vi_solver: [0mEnd tester output
+[31mphase_field_fracture.crack2d_vi_solver: [0m
+phase_field_fracture.crack2d_vi_solver [90m.......................................................[0m [31mFAILED (ERRMSG)[0m
+
+Failed Tests:
+--------------------------------------------------------------------------------------------------------------
+phase_field_fracture.crack2d_iso [90m.............................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_vol_dev [90m.........................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture_viscoplastic.crack2d [90m....................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_no_split [90m........................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_linear_fracture_energy [90m..........................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_iso_wo_time [90m.....................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_aniso [90m...........................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_aniso_hist_false [90m................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.void2d_iso [90m..............................................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_iso_with_pressure [90m...............................................[0m [31mFAILED (ERRMSG)[0m
+phase_field_fracture.crack2d_vi_solver [90m.......................................................[0m [31mFAILED (ERRMSG)[0m
+
+--------------------------------------------------------------------------------------------------------------
+Ran 14 tests in 34.6 seconds. Average test time 2.5 seconds, maximum test time 4.0 seconds.
+[1m[32m3 passed[0m, [1m0 skipped[0m, [1m[31m11 FAILED[0m
+      1 Linear |R| = [32m8.992111e-09[39m
+      2 Linear |R| = [32m2.153667e-12[39m
+ 2 Nonlinear |R| = [32m9.095272e-12[39m
+[32m Solve Converged![39m
+
+
+Postprocessor Values:
++----------------+----------------+----------------+
+| time           | resid_x        | resid_y        |
++----------------+----------------+----------------+
+|   0.000000e+00 |   0.000000e+00 |   0.000000e+00 |
+|   1.000000e-04 |  -3.881444e-17 |   2.869119e-02 |
+|   2.000000e-04 |   1.319089e-11 |   5.734437e-02 |
++----------------+----------------+----------------+
+
+
+real	0m3.957s
+user	0m1.324s
+sys	0m0.327s
+-rw-rw---- 1 brockert upg59426 132K Oct 26 10:14 crack2d_iso_out.e
