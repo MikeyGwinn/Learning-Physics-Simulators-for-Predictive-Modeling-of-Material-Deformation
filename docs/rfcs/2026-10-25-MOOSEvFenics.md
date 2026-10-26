@@ -8,7 +8,7 @@
 | Date | 2026-10-25 |
 | Status | Proposed |
 | Decision Date | Pending |
-| Deciders | To be agreed with the simulation team |
+| Deciders | Consensus from modeling team and project partners ongoing |
 | Superseded By | Not applicable |
 
 ## Problem and Context
