@@ -79,7 +79,7 @@ Acceptance Criteria:
 
 ## Constraints
 
-N/A, both frameworks are open source and can be run 100% locally, therefore no data needs to be public. 
+N/A, both frameworks are open source and can be run 100% locally, therefore no data needs to be public. The future SiC/SiC data is confidential so data will need to adhere to our confidentiality rules and stay private. 
 
 ## Delegation and Validation
 
