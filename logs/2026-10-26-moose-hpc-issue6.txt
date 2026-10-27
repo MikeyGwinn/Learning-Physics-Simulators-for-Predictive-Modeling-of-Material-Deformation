@@ -834,3 +834,18 @@ real	0m3.957s
 user	0m1.324s
 sys	0m0.327s
 -rw-rw---- 1 brockert upg59426 132K Oct 26 10:14 crack2d_iso_out.e
+/opt/openmpi/bin/mpicxx
+phase_field_fracture.crack2d_iso_with_pressure [90m............................................................[0m [32mOK[0m
+phase_field_fracture.crack2d_vi_solver [90m....................................................................[0m [32mOK[0m
+
+--------------------------------------------------------------------------------------------------------------
+Ran 14 tests in 42.5 seconds. Average test time 2.8 seconds, maximum test time 4.4 seconds.
+[1m[32m14 passed[0m, [1m0 skipped[0m, [1m0 failed[0m
+=== crack2d_iso on 4 MPI ranks
+|   2.000000e-04 |  -9.065951e-10 |   5.734437e-02 |
++----------------+----------------+----------------+
+
+
+real	0m5.244s
+user	0m8.247s
+sys	0m1.805s
