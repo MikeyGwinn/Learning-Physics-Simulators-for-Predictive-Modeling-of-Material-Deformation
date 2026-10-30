@@ -1,0 +1,1 @@
+docs/requirements.md: the problem statement; functional and non-functional requirements, with an acceptance criterion wherever the behavior isn’t obvious (a finished functional requirement can name its test in CI instead); the limits you did not choose, under Constraints; success metrics; non-goals; open questions. Guide: RequirementsLinks to an external site..

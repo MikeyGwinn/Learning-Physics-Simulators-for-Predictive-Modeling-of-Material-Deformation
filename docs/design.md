@@ -1,0 +1,1 @@
+docs/design.md: the system as it exists, with its context, key diagrams, interfaces and contracts, the data model, the deployment shape, decisions deferred on purpose, and open technical questions. Guide: Technical designLinks to an external site.. https://capstone.alexulbrich.com/guides/technical-design/
