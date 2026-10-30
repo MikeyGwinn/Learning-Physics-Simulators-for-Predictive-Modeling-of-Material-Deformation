@@ -49,7 +49,11 @@ The language, formatter, linter, and their configuration files are not establish
 
 ## Testing
 
-No test suite or test commands exist yet because the project code has not been delivered. Add or update tests when changing behavior, and document how to reproduce results that cannot reasonably be covered by automated tests. The team will add the test framework and exact local commands when the language and simulator interfaces are known.
+Component-specific correctness checks are documented with each component; see
+[pore_generator/README.md](pore_generator/README.md#development-and-checks).
+Run `git diff --check` for whitespace errors. Add or update relevant checks when
+changing behavior, and document checks that cannot reasonably be automated.
+No project-wide test runner or CI test job is configured yet.
 
 ## Definition of Done
 
@@ -58,7 +62,7 @@ A change is done when it is reviewed, validated, documented where needed, and me
 | Check | Required before merge | Enforcement and owner |
 |---|---|---|
 | Review | At least one teammate reviews the PR, understands the change, and approves it. Authors do not approve their own PRs. | Manual PR review now. Configure a required approval rule when repository settings permit; **owner: Michael Gwinn**. |
-| Tests | Relevant tests pass; add or update tests for changed behavior. | No suite or CI test job exists yet. Add the test framework and CI test job in **Sprint 2**; **owner: Michael Gwinn**. |
+| Tests | Relevant tests pass; add or update tests for changed behavior. | A local standard-library suite covers the pore generator. No CI test job exists yet; proposed CI owner: Michael Gwinn in **Sprint 2**. |
 | Lint and formatting | The configured linter and formatter checks pass. | No tools or checks exist yet. Select and configure them, then add a CI lint job in **Sprint 2**; **owner: Michael Gwinn**. |
 | Security | No secrets or unauthorized data are committed; dependency/code security checks pass once configured. | Authors and reviewers check changes manually now. Add an appropriate automated dependency/security scan in **Sprint 2**; **owner: Michael Gwinn**. |
 | Documentation | Update the README or relevant documentation when setup, usage, results, assumptions, or behavior changes. | Author checklist and reviewer check on every PR. |
