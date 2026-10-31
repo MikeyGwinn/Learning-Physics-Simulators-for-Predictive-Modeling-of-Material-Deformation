@@ -2,6 +2,10 @@
 
 *Draft. Thresholds to confirm with professors on Fri.*
 
+## Problem statement
+
+Phase-field fracture simulations of porous graphite take hours of HPC time per run, which is too slow for quick prediction. We want a learned particle simulator that predicts how a sample deforms under load much faster, trained on those simulations and checked against Dr. Chen's real ET-10 tests.
+
 ## Research question
 
 Our question is whether a particle-based neural simulator trained on phase-field fracture simulations of porous graphite (later will be a SiC-SiC composite) can predict how a sample deforms over various load steps more accurately than simple extrapolation baselines.
@@ -17,6 +21,20 @@ For data, we have two sources. Both are converted to the format defined in docs/
 For simulated data, we are using MOOSE phase field fracture runs following Chakraborty et al. 2016's method. We will create these using SEM images and John's mesher, and from generated pore layouts from Gunnar's generator.
 
 We also have Dr. Chen's notched-beam bending tests of ET-10 graphite comprising our real data (SEM video, DIC, and force/displacement logs). Dr. Chen approved this graphite data for our public repo. The future SiC data has to stay private.
+
+# Requirements:
+Functional:
+MOOSE fracture model runs on the OSU HPC. (We met this on Oct 27)
+We are able to output simulations in data format v0 and run one frame from start to end from mesher -> moose -> model
+Meshes from John's mesher imported to moose, node count matches what the mesher says
+Moose reproduces the Chakraborty benchmarks. Our peak stress values are close to the paper (up to Dr. Chen's discression)
+Model predicts displacements 10 load steps ahead. We know this works as long as we can beat out our baselines.
+
+Non-Functional:
+Runs are reproducable, which means dataset files record their geometries and we record the settings of the solver.
+We don't accidentally put confidential SiC/SiC data in the public repo.
+Hopefully, generating our dataset fits our compute budget and the time we have. 
+
 
 ## Baselines
 
@@ -48,4 +66,8 @@ Later in the year, in other terms, we could also make modifications to model out
     Building a new point tracker or physics model
     Running new experiments
     Real-time deployment / full digital twin
+
+# Open questions:
+What specific values can we use for validation thresholds and how close should require it to be?
+How do we load condition the model?
 
