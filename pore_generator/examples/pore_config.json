@@ -1,0 +1,10 @@
+{
+  "size_mm": 1.0,
+  "radius_mu": 2.941,
+  "radius_sigma": 0.703,
+  "min_radius_um": 1.0,
+  "geometric_radius_um": 20.0,
+  "target_porosity": 0.2,
+  "clearance_um": 0.0,
+  "mesh_size_um": 4.0
+}
