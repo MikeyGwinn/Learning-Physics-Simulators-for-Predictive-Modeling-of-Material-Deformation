@@ -21,7 +21,7 @@ Be respectful, constructive, and inclusive. Raise team-process or conduct concer
 
 ## Issues & Planning
 
-We have yet to decide what to use to record work, questions, bugs, and decisions. Before starting substantial work, agree on an issue or sprint task with the team and identify what will count as acceptance. Keep work small enough to review in a timely way; split larger tasks into independently reviewable pieces.
+We record work, questions, bugs, and decisions in this repository's GitHub Issues. Before starting substantial work, agree on an issue or sprint task with the team and identify what will count as acceptance. Keep work small enough to review in a timely way; split larger tasks into independently reviewable pieces.
 
 If work happens in a simulator, data platform, or another system outside this repository, record the task and its outcome in the tracker and link to the external work where access permits. Do not copy restricted data into an issue or pull request.
 
@@ -49,7 +49,11 @@ The language, formatter, linter, and their configuration files are not establish
 
 ## Testing
 
-No test suite or test commands exist yet because the project code has not been delivered. Add or update tests when changing behavior, and document how to reproduce results that cannot reasonably be covered by automated tests. The team will add the test framework and exact local commands when the language and simulator interfaces are known.
+Component-specific correctness checks are documented with each component; see
+[pore_generator/README.md](pore_generator/README.md#correctness-checks).
+Run `git diff --check` for whitespace errors. Add or update relevant checks when
+changing behavior, and document checks that cannot reasonably be automated.
+CI runs the tests on every pull request (see **CI/CD**).
 
 ## Definition of Done
 
@@ -58,11 +62,11 @@ A change is done when it is reviewed, validated, documented where needed, and me
 | Check | Required before merge | Enforcement and owner |
 |---|---|---|
 | Review | At least one teammate reviews the PR, understands the change, and approves it. Authors do not approve their own PRs. | Manual PR review now. Configure a required approval rule when repository settings permit; **owner: Michael Gwinn**. |
-| Tests | Relevant tests pass; add or update tests for changed behavior. | No suite or CI test job exists yet. Add the test framework and CI test job in **Sprint 2**; **owner: Michael Gwinn**. |
+| Tests | Relevant tests pass; add or update tests for changed behavior. | CI runs the pore generator tests on every PR; **owner: Michael Gwinn**. |
 | Lint and formatting | The configured linter and formatter checks pass. | No tools or checks exist yet. Select and configure them, then add a CI lint job in **Sprint 2**; **owner: Michael Gwinn**. |
 | Security | No secrets or unauthorized data are committed; dependency/code security checks pass once configured. | Authors and reviewers check changes manually now. Add an appropriate automated dependency/security scan in **Sprint 2**; **owner: Michael Gwinn**. |
 | Documentation | Update the README or relevant documentation when setup, usage, results, assumptions, or behavior changes. | Author checklist and reviewer check on every PR. |
-| CI | All required CI checks pass before merge; do not bypass a failing or missing required check without explicit team agreement. | CI is not configured yet. Add a CI workflow that runs tests, lint/format, and the selected security scan in **Sprint 2**; **Michael Gwinn**. |
+| CI | All required CI checks pass before merge; do not bypass a failing or missing required check without explicit team agreement. | GitHub Actions runs the tests on every PR. Add lint/format and the selected security scan to it in **Sprint 2**; **Michael Gwinn**. |
 
 **Sprint 2 is a proposed target** because the project tools and code are not available yet. At sprint 1 we will formalize details.
 ## Contribution Norm
@@ -88,7 +92,7 @@ Reviewers should check correctness, clarity, test coverage, reproducibility wher
 
 ## CI/CD
 
-There is no CI/CD workflow yet. The Sprint 2 target in the Definition of Done is to add CI for tests, lint/format checks, and the selected security scan. Until then, run available checks locally and state clearly in the PR which checks do not exist yet. Add the workflow location and instructions for viewing or rerunning jobs here when it is created.
+GitHub Actions runs `.github/workflows/ci.yml` on every pull request and on every push to `main`. It runs the tests listed under **Testing**. Results appear in the PR's checks and on the **Actions** tab, where a failed run can be rerun with **Re-run jobs**. Lint/format checks and a security scan are still the Sprint 2 target in the Definition of Done.
 
 ## Security & Secrets
 
