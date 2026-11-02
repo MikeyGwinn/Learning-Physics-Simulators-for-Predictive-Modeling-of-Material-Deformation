@@ -6,20 +6,12 @@ This is the project's only risk register. Last reviewed: 2026-11-01.
 
 | Rank | ID | Risk | Category | Likelihood | Impact | Owner |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | R-6 | No CI runs tests on pull requests | Technical | High | High | Michael |
-| 2 | R-3 | Simulations may not match real graphite | Technical | High | High | Tiago |
-| 3 | R-1 | Baseline model doesn't fit our problem | Technical | High | High | Ellie |
-| 4 | R-8 | Production target not agreed with the partner | Business | Medium | High | Tiago |
-| 5 | R-7 | Confidential SiC/SiC data could leak | Business | Medium | High | Gunnar |
-| 6 | R-5 | Simulation data can't be produced fast enough | Technical | Medium | Medium | John |
-| 7 | R-2 | SiC/SiC data may arrive late | Business | Medium | Low | Gunnar |
-
-### R-6: No CI runs tests on pull requests
-Given that no CI workflow exists, broken code can merge into `main` unnoticed, and the checkpoint's CI milestone isn't met.
-- **Likelihood: High.** No `.github/workflows/` exists on any branch.
-- **Impact: High.** CI is a checkpoint milestone item, and without it the existing tests protect nothing.
-- **Response (mitigate):** Add a GitHub Actions workflow that runs the `pore_generator` and `sem2msh` tests on every PR, and make it a required check on `main`.
-- **Trigger:** The commit we plan to name at the checkpoint has no green CI run.
+| 1 | R-3 | Simulations may not match real graphite | Technical | High | High | Tiago |
+| 2 | R-1 | Baseline model doesn't fit our problem | Technical | High | High | Ellie |
+| 3 | R-6 | Production target not agreed with the partner | Business | Medium | High | Tiago |
+| 4 | R-4 | Confidential SiC/SiC data could leak | Business | Medium | High | Gunnar |
+| 5 | R-5 | Simulation data can't be produced fast enough | Technical | Medium | Medium | John |
+| 6 | R-2 | SiC/SiC data may arrive late | Business | Medium | Low | Gunnar |
 
 ### R-3: Simulations may not match real graphite
 Given that the model learns only from our MOOSE simulations, those simulations may not reproduce Chakraborty et al. (2016) or Dr. Chen's experiments. The cause could be the solver setup, the mesh resolution, or a graphite grade that differs from the paper's. The model would then learn the wrong physics.
@@ -36,7 +28,7 @@ Given that Dr. Kim's model steps through time, takes 3D point clouds, and fits o
 - **Trigger:** The 2D model can't overfit one simulated sample by 2026-11-22, or doesn't beat the load-scaled-increment baseline on held-out samples.
 - **Asked:** Dr. Kim, 2026-10-20, about load conditioning.
 
-### R-8: Production target not agreed with the partner
+### R-6: Production target not agreed with the partner
 Given that no supervisor has confirmed the OSU HPC and sample data as the week-10 target, we may build toward a target the partner doesn't accept.
 - **Likelihood: Medium.** We already run there, but nobody has asked for the target to be confirmed.
 - **Impact: High.** The target is a checkpoint milestone item.
@@ -44,7 +36,7 @@ Given that no supervisor has confirmed the OSU HPC and sample data as the week-1
 - **Trigger:** No confirmation by 2026-11-08.
 - **Start by:** 2026-11-06.
 
-### R-7: Confidential SiC/SiC data could leak
+### R-4: Confidential SiC/SiC data could leak
 Given that the repo is public, the team uses AI tools, and no private storage location has been chosen, SiC/SiC data could be committed or sent to an AI service when it arrives.
 - **Likelihood: Medium.** Nothing automatically checks for data files.
 - **Impact: High.** A leak breaks the partner company's approval, and a committed file stays in Git history.
@@ -72,7 +64,7 @@ Given that the SiC/SiC data needs approval from the partner company, it may arri
 | Prerequisite | Risk | Asked | Status |
 | --- | --- | --- | --- |
 | SiC/SiC data from the partner company | R-2 | Gunnar → Dr. Chen, sprint 1 | Waiting |
-| Production target agreement | R-8 | Tiago → Dr. Chen and Dr. Kim, start by 2026-11-06 | Not asked |
+| Production target agreement | R-6 | Tiago → Dr. Chen and Dr. Kim, start by 2026-11-06 | Not asked |
 | Validation thresholds | R-3 | Tiago → Dr. Chen  | Waiting |
 | Load-conditioning approach | R-1 | Ellie → Dr. Kim, 2026-10-20 | Follow-up planned |
 | ET-10 graphite data shared | — | Dr. Chen | Approved |
@@ -86,3 +78,4 @@ Given that the SiC/SiC data needs approval from the partner company, it may arri
 | Undoing a bad change | Revert the merge commit with a new PR. Never force-push `main`. | In place | Michael |
 
 ## Closed
+
