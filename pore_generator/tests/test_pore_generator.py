@@ -13,7 +13,7 @@ from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 from pore_generator.__main__ import main
-from pore_generator.generation import Config, generate, sample_radius_mm
+from pore_generator.generation import Config, circle_rectangle_area, generate, sample_radius_mm
 
 
 class PoreGeneratorTests(unittest.TestCase):
@@ -60,10 +60,31 @@ class PoreGeneratorTests(unittest.TestCase):
         self.assertAlmostEqual(statistics.mean(logs), expected_mean, delta=0.03)
         self.assertGreater(statistics.stdev(logs), 0.2)
 
+    def test_circle_rectangle_area(self):
+        r = 0.01
+        full = math.pi * r ** 2
+        self.assertAlmostEqual(circle_rectangle_area(0.025, 0.025, r, 0, 0.05, 0, 0.05) / full, 1)
+        self.assertAlmostEqual(circle_rectangle_area(0.05, 0.025, r, 0, 0.05, 0, 0.05) / full, 1 / 2)
+        self.assertAlmostEqual(circle_rectangle_area(0.05, 0.05, r, 0, 0.05, 0, 0.05) / full, 1 / 4)
+        # An off-center circle split across four cells keeps its whole area.
+        parts = [circle_rectangle_area(0.047, 0.053, r, x0, x0 + 0.05, y0, y0 + 0.05)
+                 for x0 in (0, 0.05) for y0 in (0, 0.05)]
+        self.assertAlmostEqual(sum(parts) / full, 1)
+
+    def test_effective_porosity_grid(self):
+        sample = generate(Config(), 42)
+        grid = sample["effective_porosity"]
+        values = [value for row in grid["values"] for value in row]
+        self.assertAlmostEqual(grid["cell_mm"], 0.05)
+        self.assertEqual([len(row) for row in grid["values"]], [20] * 20)
+        self.assertTrue(all(0 <= value < 1 for value in values))
+        self.assertAlmostEqual(statistics.mean(values), sample["statistics"]["small_porosity"])
+
     def test_invalid_configuration(self):
         for values in ({"size_mm": 0}, {"radius_mu": math.nan}, {"radius_sigma": -1},
                        {"clearance_um": -1}, {"target_porosity": 1}, {"mesh_size_um": 0},
-                       {"min_radius_um": 21}, {"size_mm": 0.001}, {"size_mm": True}):
+                       {"min_radius_um": 21}, {"size_mm": 0.001}, {"size_mm": True},
+                       {"effective_cell_um": 0}, {"effective_cell_um": 30}):
             with self.subTest(values=values), self.assertRaises(ValueError):
                 Config(**values)
 
@@ -97,6 +118,11 @@ class PoreGeneratorTests(unittest.TestCase):
                 rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), sample["statistics"]["pore_count"])
             self.assertEqual(float(rows[0]["radius_mm"]), sample["pores"][0]["radius_mm"])
+            with (output / "effective_porosity.csv").open(newline="") as stream:
+                cells = list(csv.DictReader(stream))
+            self.assertEqual(len(cells), 40 * 40)
+            self.assertEqual((float(cells[0]["x_mm"]), float(cells[0]["y_mm"])), (0.025, 0.025))
+            self.assertAlmostEqual(float(cells[0]["effective_porosity"]) + float(cells[0]["modulus_factor"]), 1)
             ET.parse(output / "preview.svg")
             original = (output / "sample.json").read_bytes()
             with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

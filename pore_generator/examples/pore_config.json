@@ -6,5 +6,6 @@
   "geometric_radius_um": 20.0,
   "target_porosity": 0.2,
   "clearance_um": 0.0,
-  "mesh_size_um": 4.0
+  "mesh_size_um": 4.0,
+  "effective_cell_um": 50.0
 }
