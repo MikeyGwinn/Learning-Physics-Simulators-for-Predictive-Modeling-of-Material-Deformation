@@ -109,6 +109,7 @@ and retains existing outputs and CSV rows.
 | `target_porosity` | 0.20 | Target area fraction, including small pores |
 | `clearance_um` | 0.0 | Minimum pore-to-pore and pore-to-boundary gap |
 | `mesh_size_um` | 4.0 | Target triangle size |
+| `effective_cell_um` | 50.0 | Side length of the small-pore effective porosity cells; must divide `size_mm` evenly |
 
 Defaults use the radius distribution in Chakraborty, Sabharwall, and Carroll
 (2016), *A phase-field approach to model multi-axial and microstructure dependent
@@ -133,16 +134,21 @@ A seed reproduces a sample for the same configuration and Python implementation
 and version, recorded in `sample.json`.
 
 Pores below the geometric cutoff are saved and counted in total porosity, but
-occupy matrix material in both meshes. No small-pore stiffness correction is
-applied. Material-region meshes contain tagged pore cells; perforated meshes
-remove those cells as holes. The exporter assigns no material properties.
+occupy matrix material in both meshes. Following Chakraborty et al. (2016),
+Section 3, they are instead recorded as an effective porosity `f_eff` on a grid
+of 50 μm square cells, for the solver to apply as `E_eff = (1 - f_eff) E`. Each
+small pore's area is split between cells by exact circle–square overlap and
+divided by the full cell area. Material-region meshes contain tagged pore cells;
+perforated meshes remove those cells as holes. The exporter assigns no material
+properties.
 
 ## Outputs
 
 Each sample directory contains:
 
-- `sample.json`: configuration, seed, coordinate conventions, pore table, and statistics.
+- `sample.json`: configuration, seed, coordinate conventions, pore table, effective porosity grid (rows from the bottom), and statistics.
 - `pores.csv`: `id,x_mm,y_mm,radius_mm,kind`, with kind `explicit` or `small`.
+- `effective_porosity.csv`: `x_mm,y_mm,effective_porosity,modulus_factor`, one row per cell center, with `modulus_factor = 1 - effective_porosity`.
 - `preview.svg`: all pores, with explicit pores blue and small pores orange.
 - `material_mesh/specimen.geo`: matrix and pore regions sharing circle boundaries.
 - `perforated_mesh/specimen.geo`: the same explicit pores represented as holes.
