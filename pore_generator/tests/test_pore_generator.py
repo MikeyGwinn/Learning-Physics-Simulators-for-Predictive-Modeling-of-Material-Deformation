@@ -118,6 +118,11 @@ class PoreGeneratorTests(unittest.TestCase):
                 rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), sample["statistics"]["pore_count"])
             self.assertEqual(float(rows[0]["radius_mm"]), sample["pores"][0]["radius_mm"])
+            with (output / "effective_porosity.csv").open(newline="") as stream:
+                cells = list(csv.DictReader(stream))
+            self.assertEqual(len(cells), 40 * 40)
+            self.assertEqual((float(cells[0]["x_mm"]), float(cells[0]["y_mm"])), (0.025, 0.025))
+            self.assertAlmostEqual(float(cells[0]["effective_porosity"]) + float(cells[0]["modulus_factor"]), 1)
             ET.parse(output / "preview.svg")
             original = (output / "sample.json").read_bytes()
             with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:
