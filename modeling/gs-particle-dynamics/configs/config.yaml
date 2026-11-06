@@ -1,0 +1,54 @@
+exp_dir: path/to/checkpoints
+exp_name: your_experiment_name
+output_dir: path/to/rollout_outputs
+device: cuda
+
+model:
+  type: Interaction_PointConv
+  output_dim: 2 # One independent XY displacement/acceleration per Gaussian; no rotation head.
+  pointcloud_feat: 32
+  pred_mlp_input_feat_dim: 32
+  pred_mlp_hidden_dim: 256
+  input_frame_num: 2 # Each frame input includes velocity as input, so the actual number of input frames is 3. Current code doesn't support other input frame numbers.
+  dist_threshold: 0.15 # Distance threshold for assignment-free spatial PointConv neighbors.
+  pointwise_prediction: true
+  acceleration_prediction: false
+
+pointcloud:
+  input_dim: 3
+  knn: 32 # knn at the lowest level
+  knn_k_decay_factor: 2
+  grid_size:
+    - 0.02 # 2 cm
+    - 0.05 # 5 cm
+  scaling: 10.0 # scaling factor for the input point cloud.
+    
+train:
+  batch_sz: 12
+  view_num: 4
+  frames_per_scene: 10 # number of frames to sample from each scene in an epoch
+  num_workers: 6
+  seq_len: 5 # number of frames in the training sequence (this includes the input frames defined by input_frame_num)
+  learning_rate: 0.001
+  # Rotations and scales are fixed during independent translation, so train the
+  # motion head from position supervision rather than 3D rendering gradients.
+  loss_type: position # all, position, rendering
+  hard_example_mining: false
+  warm_up_epoch: 2
+  epoch: 50
+  milestones:
+    - 23
+    - 45
+    - 50
+
+test:
+  batch_sz: 1 # current code doesn't support batch size > 1 during testing
+  view_num: 4
+  num_workers: 2
+  seq_len: 200 # need to be set greater than the total number of frames in the longest test scene for complete rollout generation
+
+dataset:
+  name: tbd
+  data_dir: path/to/processed_dataset
+  max_object_num: 11
+  camera_num: 4
