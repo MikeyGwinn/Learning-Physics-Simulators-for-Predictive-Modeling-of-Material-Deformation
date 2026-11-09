@@ -14,6 +14,14 @@ def write_sample(sample, output):
         writer = csv.DictWriter(stream, fieldnames=["id", "x_mm", "y_mm", "radius_mm", "kind"])
         writer.writeheader()
         writer.writerows(sample["pores"])
+    # One row per cell center, for a solver that applies E_eff = (1 - f_eff) E.
+    cell = sample["effective_porosity"]["cell_mm"]
+    with (output / "effective_porosity.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["x_mm", "y_mm", "effective_porosity", "modulus_factor"])
+        for j, row in enumerate(sample["effective_porosity"]["values"]):
+            for i, value in enumerate(row):
+                writer.writerow([(i + 0.5) * cell, (j + 0.5) * cell, value, 1 - value])
     (output / "preview.svg").write_text(preview_svg(sample), encoding="utf-8")
     for mesh_format in ("material", "perforated"):
         mesh_dir = output / f"{mesh_format}_mesh"
