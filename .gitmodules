@@ -1,0 +1,4 @@
+[submodule "modeling/data-preprocessing/external/alltracker"]
+	path = modeling/data-preprocessing/external/alltracker
+	url = git@github.com:MikeyGwinn/alltracker-capstone.git
+	branch = team-dev
