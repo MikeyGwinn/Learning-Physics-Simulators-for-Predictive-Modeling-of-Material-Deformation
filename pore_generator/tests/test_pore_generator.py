@@ -13,6 +13,7 @@ from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 from pore_generator.__main__ import main
+from pore_generator.generate_batch import generate_batch, split_label
 from pore_generator.generation import Config, circle_rectangle_area, generate, sample_radius_mm
 
 
@@ -129,6 +130,25 @@ class PoreGeneratorTests(unittest.TestCase):
                 main(args)
             self.assertEqual(error.exception.code, 2)
             self.assertEqual(original, (output / "sample.json").read_bytes())
+
+    def test_batch_split_labels(self):
+        config = Config(target_porosity=0.01)
+        with tempfile.TemporaryDirectory() as directory, contextlib.redirect_stdout(io.StringIO()):
+            labels = {}
+            for count in (4, 8):
+                output = Path(directory) / f"batch-{count}"
+                generate_batch(config, count, 0, output, test_fraction=0.5)
+                with (output / "split.csv").open(newline="") as stream:
+                    labels[count] = {row["seed"]: row["split"] for row in csv.DictReader(stream)}
+                self.assertEqual(len(labels[count]), count)
+                self.assertEqual(json.loads((output / "batch.json").read_text())["test_fraction"], 0.5)
+            # Growing the batch keeps every existing label, so no test sample becomes training data.
+            self.assertEqual({seed: labels[8][seed] for seed in labels[4]}, labels[4])
+            self.assertEqual(set(labels[8].values()), {"train", "test"})
+        self.assertEqual([split_label(seed, 0) for seed in range(20)], ["train"] * 20)
+        self.assertEqual([split_label(seed, 1) for seed in range(20)], ["test"] * 20)
+        with self.assertRaises(ValueError):
+            generate_batch(config, 1, 0, "unused", test_fraction=1.5)
 
 
 if __name__ == "__main__":
