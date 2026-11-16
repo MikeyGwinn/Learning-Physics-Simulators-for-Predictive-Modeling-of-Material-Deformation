@@ -80,6 +80,26 @@ batch with the same seeds keeps every existing label, and no test sample becomes
 training data. The test share is approximate for small batches (for example 7 of
 50 at the default).
 
+## Stiffness maps for MOOSE
+
+The MOOSE graphite input (`validation/rve/rve_paper.i`) reads pores from a
+stiffness map, `efactor_<seed>.txt`, rather than from a Gmsh mesh. To make one
+for every sample in a batch, run from the repository root with numpy and
+matplotlib installed:
+
+```bash
+mkdir pore_generator/results/batch-500/efactor
+cd pore_generator/results/batch-500/efactor
+python ../../../../validation/rve/gunnar_to_moose.py ../seed-*
+```
+
+The script writes into the current directory and does not modify the samples.
+For each sample it writes `efactor_<seed>.txt` (E/E0 on a 2 μm grid: 1 in matrix,
+`modulus_factor` in each effective porosity cell, 1e-4 inside explicit pores) and
+`rve_<seed>.png`, then `fig_pore_cdf.png` for all samples. The seed is not
+zero-padded: `seed-000007/` gives `efactor_7.txt`, which `rve_paper.i` loads with
+`seed = 7`.
+
 ## Batch meshing
 
 ```bash
