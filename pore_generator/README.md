@@ -62,7 +62,7 @@ outputs and both `.geo` representations. Rejected seeds leave gaps in these
 directory names. Parameters remain fixed across attempts.
 
 `batch.json` records the configuration, Python version, requested count, starting
-seed, run status, and totals. `samples.csv` records every attempted seed, its
+seed, test fraction, split rule, run status, and totals. `samples.csv` records every attempted seed, its
 status, relative sample directory, pore counts, achieved porosity, and any error.
 The CSV is flushed after each attempt. Filesystem and unexpected errors stop
 generation and mark the batch failed.
@@ -72,6 +72,13 @@ remain in the CSV. There is no limit on how many seeds are attempted, so a
 configuration that cannot succeed will keep running until interrupted. Ctrl+C
 retains completed samples and records, marks the batch interrupted, and exits
 with status 130. Existing batches cannot be resumed.
+
+`split.csv` labels each saved sample `train` or `test` (`seed,sample_directory,split`).
+A sample is `test` when `random.Random(f"split-{seed}").random()` is below
+`--test-fraction` (default 0.2), so its label depends only on its seed: growing a
+batch with the same seeds keeps every existing label, and no test sample becomes
+training data. The test share is approximate for small batches (for example 7 of
+50 at the default).
 
 ## Batch meshing
 
