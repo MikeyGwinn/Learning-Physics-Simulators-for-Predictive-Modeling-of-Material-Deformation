@@ -22,17 +22,15 @@ def find_knns(pc, nsamples):
     return nn_idx
 
 
-def find_knns_across_levels(pc, feat, nsamples_min, knn, knn_k_decay_factor, grid_size, scaling):
+def find_knns_across_levels(pc, nsamples_min, knn, knn_k_decay_factor, grid_size, scaling):
 
     # grid downsample
     num_points = pc.shape[0]
     idx = np.arange(num_points)
     idx_sel = torch.tensor(idx, dtype=torch.long)
     pc_sel = torch.tensor(pc, dtype=torch.float)
-    feat_sel = torch.tensor(feat, dtype=torch.float)
     pc_all = [pc_sel]
     idx_all = [idx_sel]
-    feat_all = [feat_sel]
 
     for i in range(len(grid_size)):
         assert nsamples_min >= 1, (
@@ -45,14 +43,11 @@ def find_knns_across_levels(pc, feat, nsamples_min, knn, knn_k_decay_factor, gri
             raise NotImplementedError("Too few points after downsampling.")
         nsamples_min = int(nsamples_min // knn_k_decay_factor)
         pc_sel = pc[idx]
-        feat_sel = feat[idx]
         idx_sel = torch.tensor(idx, dtype=torch.long)
         pc_sel = torch.tensor(pc_sel, dtype=torch.float)
-        feat_sel = torch.tensor(feat_sel, dtype=torch.float)
         idx_all.append(idx_sel)
         pc_all.append(pc_sel)
-        feat_all.append(feat_sel)
-
+    
     # compute knns between downsampled points clouds
     assert len(grid_size) == (len(pc_all) - 1)
     k_curr = knn
@@ -110,28 +105,11 @@ class Dataset(torch.utils.data.Dataset):
         else:
             self.data_dir = os.path.join(cfg['dataset']['data_dir'], cfg['dataset']['scenario'], phase)
 
-        # Preserve exclusions from the published datasets, while allowing new
-        # scenario and scene names which do not encode a numeric release ID.
-        skip_lists = {
-            'bowling': {13, 48, 50, 127, 128, 130, 141},
-            'cube_stacks': {
-                36, 72, 74, 75, 78, 81, 82, 83, 105, 106, 124, 130,
-                131, 133, 161, 162, 163, 174, 191, 193, 208, 234,
-            },
-        }
-        skip_list = skip_lists.get(cfg['dataset']['scenario'], set())
-
         trial_names_all = sorted(os.listdir(self.data_dir))
         scene_folders = []
         for trial_name in trial_names_all:
-            scene_folder = os.path.join(self.data_dir, trial_name, 'gs')
-            if not os.path.isdir(scene_folder):
-                continue
-            try:
-                scene_number = int(trial_name.rsplit('_', 1)[1])
-            except (IndexError, ValueError):
-                scene_number = None
-            if scene_number not in skip_list:
+            scene_folder = os.path.join(self.data_dir, trial_name, "gs")
+            if os.path.isdir(scene_folder):
                 scene_folders.append(scene_folder)
 
         trial_names = []
@@ -357,10 +335,6 @@ class Dataset(torch.utils.data.Dataset):
 
         required_shapes = {
             'means3D': (3,),
-            'unnorm_rotations': (4,),
-            'logit_opacities': (1,),
-            'log_scales': (3,),
-            'shs': (16, 3),
         }
         frame_paths = self._get_frame_paths(scene_folder)
         sequence = {key: [] for key in required_shapes}

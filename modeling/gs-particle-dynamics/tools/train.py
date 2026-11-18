@@ -109,7 +109,7 @@ for epoch_num in range(1, cfg['train']['epoch'] + 1):
     epoch_loss = []
     model_runner.put_models_in_train_mode()
     for idx, batch in enumerate(train_generator):
-        loss, _, _ = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase='train')
+        loss, _ = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase='train')
         model_runner.optimize(loss)
         epoch_loss.append(loss.data.item())        
         # print(loss.data.item())        
@@ -126,6 +126,8 @@ for epoch_num in range(1, cfg['train']['epoch'] + 1):
     if epoch_num == cfg['train']['epoch']:
         model_runner.store_checkpoint(epoch_num)
 
+
+    # Hard example mining, ignoring for now
     if not cfg['train']['hard_example_mining']:
         continue
 
@@ -141,7 +143,7 @@ for epoch_num in range(1, cfg['train']['epoch'] + 1):
     model_runner.put_models_in_eval_mode()
     for idx, batch in enumerate(train_hem_generator):
         with torch.no_grad():
-            _, point_loss, frame_loss = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase='train_hem')
+            _, point_loss = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase='train_hem')
         train_point_loss += point_loss.sum().item()
         total_point_num += point_loss.shape[0]
         train_frame_loss += frame_loss.sum().item()
