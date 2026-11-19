@@ -4,8 +4,6 @@ import torch
 import torch.utils.checkpoint
 import torch.nn.functional as F
 from pytorch3d.structures import Pointclouds
-from gsplat.rendering import rasterization
-
 
 class Model_Runner(object):
 
@@ -71,7 +69,6 @@ class Model_Runner(object):
         reference_tensor = batch_all['velocity'][0]
         loss = reference_tensor.new_zeros(())
         point_loss = reference_tensor.new_zeros(sum(idx_info['batch_idx'][0]))
-        frame_loss = reference_tensor.new_zeros(len(idx_info['batch_idx'][0]))
 
         for curr_frame in range(0, seq_len - 1):
             assert(curr_frame not in single_frame_input.keys())
@@ -90,32 +87,15 @@ class Model_Runner(object):
             pred = self._collect_pointwise_pred_and_gt(out, curr_batch, curr_frame, phase)
 
             pos_loss_weight = 1.0            
-            rend_loss_weight = 3.0
             gt_pos_idx = curr_frame - (self.cfg['model']['input_frame_num'] - 1)
             if phase == "train" or phase == "train_hem":
-                if self._is_gt_frame(curr_frame):
-                    assert gt_pos_idx == 0
-                    if self.cfg['train']['loss_type'] == 'all' or self.cfg['train']['loss_type'] == 'position':
-                        point_loss_avg_curr, point_loss_curr, _ = self._compute_position_loss(pred, gt_info ,gt_pos_idx)
-                        loss = loss + pos_loss_weight * point_loss_avg_curr                    
-                        point_loss = point_loss + pos_loss_weight * point_loss_curr
-                    if self.cfg['train']['loss_type'] == 'all' or self.cfg['train']['loss_type'] == 'rendering':
-                        frame_loss_avg_curr, frame_loss_curr = self._compute_rendering_loss(pred, idx_info, gt_info, -1)
-                        loss = loss + rend_loss_weight * frame_loss_avg_curr
-                        frame_loss = frame_loss + rend_loss_weight * frame_loss_curr
-                else:
-                    if self.cfg['train']['loss_type'] == 'all' or self.cfg['train']['loss_type'] == 'position':
-                        point_loss_avg_curr, point_loss_curr, _ = self._compute_position_loss(pred, gt_info ,gt_pos_idx)
-                        loss = loss + pos_loss_weight * point_loss_avg_curr
-                        point_loss = point_loss + pos_loss_weight * point_loss_curr
-                    if self.cfg['train']['loss_type'] == 'all' or self.cfg['train']['loss_type'] == 'rendering':
-                        frame_loss_avg_curr, frame_loss_curr = self._compute_rendering_loss(pred, idx_info, gt_lookahead_info, lookahead_frame_ct)
-                        loss = loss + rend_loss_weight * frame_loss_avg_curr
-                        frame_loss = frame_loss + rend_loss_weight * frame_loss_curr
-                    lookahead_frame_ct += 1
+                if self.cfg['train']['loss_type'] == 'all' or self.cfg['train']['loss_type'] == 'position':
+                    point_loss_avg_curr, point_loss_curr, _ = self._compute_position_loss(pred, gt_info ,gt_pos_idx)
+                    loss = loss + pos_loss_weight * point_loss_avg_curr                    
+                    point_loss = point_loss + pos_loss_weight * point_loss_curr
+                lookahead_frame_ct += 1
             elif phase == "test":          
-                # loss_curr, loss_all, topk_inds = self._compute_position_loss_test(pred, gt_info)   
-                # _ = self._compute_rendering_loss_test(pred, vars, idx_info, cam_info, gt_info, topk_inds, loss_all)   
+                # loss_curr, loss_all, topk_inds = self._compute_position_loss_test(pred, gt_info)     
                 self._update_pred_log_using_gs_format(pred, pred_log, gt_info, gt_pos_idx)                
                 if gt_pos_idx == len(gt_info[0]['position']) - 1: break # stop inference when the rollout frame reaches the end of GT frames.
             else:
@@ -125,7 +105,6 @@ class Model_Runner(object):
         actual_pred_frame_num = seq_len - 1 - (self.cfg['model']['input_frame_num'] - 1)
         loss = loss / actual_pred_frame_num
         point_loss = point_loss / actual_pred_frame_num
-        frame_loss = frame_loss / actual_pred_frame_num
 
         assert phase == 'test' or gt_pos_idx == len(gt_info[0]['position']) - 1
         assert phase == 'test' or lookahead_frame_num == lookahead_frame_ct
@@ -134,7 +113,7 @@ class Model_Runner(object):
         if phase == "test":
             self._store_pred_log(pred_log, batch_all['seq_name'])
 
-        return loss, point_loss, frame_loss
+        return loss, point_loss
 
     def _compute_position_loss(self, pred, gt_info, gt_pos_idx):
 
@@ -172,44 +151,6 @@ class Model_Runner(object):
         loss = torch.mean(top_k_out.values)
 
         return loss, torch.sum(loss_points, dim=-1), top_k_out.indices
-
-    def _compute_rendering_loss(self, pred, idx_info, gt_info, lookahead_frame_ct):
-        
-        num_pts_per_batch = idx_info['batch_idx'][0] # densest level
-        batch_num = len(num_pts_per_batch)
-        assert sum(num_pts_per_batch) == pred['pc'][0].points_packed().shape[0]        
-        assert len(gt_info) == batch_num
-        # Rendering uses only the first 59 placeholder Gaussian attributes.
-        # Additional channels are allowed, but object-assignment channels are
-        # no longer required by either the renderer or the dynamics backbone.
-        assert pred['pc'][0].features_packed().shape[1] >= 59
-            
-        st = 0
-        loss = 0.0
-        loss_list = []
-        for i in range(batch_num):
-            ed = st + num_pts_per_batch[i]
-
-            params = {
-                'means3D': pred['pc'][0].points_packed()[st:ed],
-                'shs': pred['pc'][0].features_packed()[st:ed, 11:59].reshape(-1, 16, 3),
-                'seg_colors': pred['pc'][0].features_packed()[st:ed, 8:11],
-                'unnorm_rotations': pred['pc'][0].features_packed()[st:ed, :4],
-                'logit_opacities': torch.unsqueeze(pred['pc'][0].features_packed()[st:ed, 4], dim=1),
-                'log_scales': pred['pc'][0].features_packed()[st:ed, 5:8],
-            }
-
-            # TODO: batch rendering -- now, just using a for loop
-            if lookahead_frame_ct != -1:
-                loss_curr = self._get_loss(params, gt_info[i][lookahead_frame_ct])
-            else:
-                loss_curr = self._get_loss(params, gt_info[i])
-            
-            loss_list.append(loss_curr)
-            loss += loss_curr
-            st = ed        
-
-        return loss / batch_num, torch.stack(loss_list, dim=0)
 
     def _update_pred_log_using_gs_format(self, pred, pred_log, gt_info, gt_pos_idx):
 
@@ -257,39 +198,6 @@ class Model_Runner(object):
         if not os.path.isdir(out_scene_dir):
             os.mkdir(out_scene_dir)
         np.savez(f"{out_scene_dir}/params", **pred_log)
-
-
-    def _get_loss(self, params, curr_data):
-
-        scales = torch.exp(params['log_scales'])
-        opacities = torch.squeeze(torch.sigmoid(params['logit_opacities']), axis=-1)
-
-        render_colors, render_alphas, info = rasterization(
-            means=params['means3D'] * (1.0 /self.cfg['pointcloud']['scaling']), # back to the original scale for rendering
-            quats=params['unnorm_rotations'],
-            scales=scales,
-            opacities=opacities,
-            colors=params['shs'],
-            viewmats=curr_data['w2c'],  # [C, 4, 4]
-            Ks=curr_data['k'],  # [C, 3, 3]
-            width=curr_data['w'],
-            height=curr_data['h'],
-            sh_degree=3,
-            render_mode='RGB+ED'
-        )
-
-        # render_depth = torch.squeeze(render_colors[..., 3:4], dim=-1)
-        render_colors = render_colors[..., 0:3]
-
-        # first channel encodes the foreground
-        valid_mask = curr_data['seg'][:, [0]].float()
-
-        render_colors = render_colors.permute(0, 3, 1, 2)
-        predicted_colors_masked = render_colors
-        gt_colors_masked = torch.mul(curr_data['im'], valid_mask)
-        l1loss = F.l1_loss(predicted_colors_masked, gt_colors_masked, reduction='mean')
-
-        return l1loss
 
     def _get_seq_len(self, phase):
 

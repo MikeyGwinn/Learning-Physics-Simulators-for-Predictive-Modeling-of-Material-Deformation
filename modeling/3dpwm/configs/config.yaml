@@ -1,0 +1,43 @@
+exp_dir: runs
+exp_name: deformation
+output_dir: output/deformation
+device: cuda
+
+pointcloud: {feat_dim: 9, grid_size: 0.00625}
+
+model:
+  action_channels: 7
+  ptv3:
+    stride: [2, 2]
+    enc_depths: [2, 2, 2]
+    enc_channels: [32, 128, 256]
+    enc_num_head: [8, 8, 8]
+    enc_patch_size: [256, 48, 256]
+    enc_enable_rpe: [false, true, false]
+    enc_enable_flash: [true, false, true]
+    dec_depths: [2, 2]
+    dec_channels: [128, 256]
+    dec_num_head: [8, 8]
+    dec_patch_size: [256, 48]
+    dec_enable_rpe: [false, true]
+    dec_enable_flash: [true, false]
+
+training:
+  batch_sz: 112
+  num_workers: 8
+  log_interval: 25
+  rollout_num: 10
+  epoch: 20
+  criterion: {loss: HuberLoss, delta: 0.0025} # delta may need to be adjusted
+  optimizer: {learning_rate: 0.0001}
+  step_size: 10
+  gamma: 0.1
+  cpu_threads: 2
+
+testing: {num_workers: 0, recordings: 2, max_sequences: null}
+
+# the loader searches either data_dir/scenario/train or data_dir/scenario/test
+dataset: {data_dir: TODO, training_fpt: 1,
+  scenario: TODO}
+
+seed: 0

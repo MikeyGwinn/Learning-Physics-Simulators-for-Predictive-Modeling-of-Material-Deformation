@@ -53,4 +53,4 @@ for idx, batch in enumerate(test_generator):
     assert len(batch['seq_name']) == 1, "Processing only one scene at a time for testing."
     print("%.2f%% Completed, Processing scene: %s" % (float(idx + 1) / len(test_generator) * 100, batch['seq_name'][0]))
     with torch.no_grad():
-        loss, _, _ = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase=phase)
+        loss, _ = model_runner.compute_loss(move_to_gpu(batch, cfg['device']), phase=phase)
