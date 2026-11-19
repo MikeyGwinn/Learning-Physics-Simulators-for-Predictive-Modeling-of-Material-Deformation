@@ -77,7 +77,7 @@ Since the decision has been made, these checks are how we will know it worked. T
 1. Known answer test: Run a plate with no pores under the same loading as the graphite input. Without pores the plate stretches evenly, so we know exactly where every node should be. In every frame, the top row of nodes has to move up by that frame's step value, the bottom row can't move, and the middle row has to move half as far as the top. If movement is counted twice or the units are mixed up, this is off by a factor of 2 or 1,000.
 2. Equal spacing: The gap between every pair of frames has to be the same, otherwise the exporter stops with an error.
 3. Same particles: Every frame has the same number of particles in the same order, with no missing values.
-4. Model test: One sample from the dataset loads into the baseline, one training step runs without errors, and the predictions have shape [N, 2].
+4. Model test: One sample from the dataset loads into the baseline, one training step runs without errors, and the predictions have one position per particle.
 
 Checks 1–3 also run on the notched-plate benchmark (validation/sent/sent_paper.i), so we know the exporter works on more than one simulation. These checks make sure the conversion is correct, not that the model is accurate, which is measured separately (docs/requirements.md, Success metric).
 
