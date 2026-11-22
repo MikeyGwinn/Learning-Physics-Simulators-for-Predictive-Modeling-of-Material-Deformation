@@ -19,16 +19,19 @@ for d in sys.argv[1:]:
     with open(f"{d}/sent_paper_out.csv") as f:
         r = csv.reader(f); head = next(r); A = np.array([[float(x) for x in row] for row in r if row])
     e, s = A[:, head.index("strain")], A[:, head.index("stress")]
-    runs.append((d, h, e, s, s.max(), e[s.argmax()], s[-1] < 0.5 * s.max()))
+    peaked = s.argmax() < len(s) - 5 and s[-1] < 0.97 * s.max()   # stress went over a maximum (not still rising)
+    runs.append((d, h, e, s, s.max(), e[s.argmax()], s[-1] < 0.5 * s.max(), peaked))
 runs.sort(key=lambda r: -r[1])
 pe = np.array(PAPER); ppeak = pe[:, 1].max()
 fig, (a, b) = plt.subplots(1, 2, figsize=(12, 4.6))
 a.plot(pe[:, 0], pe[:, 1], "o", ms=3, color="#d9822b", label="paper Fig. 1b")
 cols = plt.cm.viridis(np.linspace(0.15, 0.85, len(runs)))
-for (d, h, e, s, pk, ep, broke), c in zip(runs, cols):
-    a.plot(e, s, color=c, lw=2, label=f"h = l/{L_ELL/h:.0f} ({h*1000:.2f} um)" + ("" if broke else ", no drop yet"))
+for (d, h, e, s, pk, ep, broke, peaked), c in zip(runs, cols):
+    a.plot(e, s, color=c, lw=2, label=f"h = l/{L_ELL/h:.0f} ({h*1000:.2f} um)" + ("" if broke else ", no drop yet" if peaked else ", UNFINISHED (not in fit)"))
 a.set_xlabel("strain"); a.set_ylabel("stress (GPa)"); a.grid(alpha=.3); a.legend(fontsize=8); a.set_title("Stress-strain for each mesh", fontsize=11)
-hl = np.array([r[1] / L_ELL for r in runs]); pk = np.array([r[4] for r in runs])
+done = [r for r in runs if r[7]]          # only runs that reached their peak say anything about the peak
+if not done: sys.exit("No run has reached its peak yet; nothing to fit.")
+hl = np.array([r[1] / L_ELL for r in done]); pk = np.array([r[4] for r in done])
 # AT2 on a mesh of size h behaves as if g_c were g_c (1 + h / 2l), and LEFM peak load scales with sqrt(g_c):
 #   peak(h) = peak0 * sqrt(1 + h / (2 l))   ->  fit peak0, the mesh-independent value
 w = np.sqrt(1 + hl / 2); peak0 = float(np.sum(pk * w) / np.sum(w * w))
@@ -41,7 +44,8 @@ b.grid(alpha=.3); b.legend(fontsize=8); b.set_title(f"Refining the mesh: mesh-fr
 fig.tight_layout(); fig.savefig("fig5_mesh_study.png", dpi=200)
 with open("mesh_study.txt", "w") as f:
     f.write(f"{'run':10s}{'h (um)':>10s}{'h/l':>8s}{'peak GPa':>10s}{'strain':>10s}{'vs paper':>10s}{'cracked':>9s}\n")
-    for d, h, e, s, p, ep, broke in runs:
-        f.write(f"{d:10s}{h*1000:10.3f}{h/L_ELL:8.3f}{p:10.4f}{ep:10.5f}{100*(p-ppeak)/ppeak:+9.1f}%{str(broke):>9s}\n")
-    f.write(f"\nfitted mesh-independent peak {peak0:.4f} GPa vs paper {ppeak:.4f} GPa ({100*(peak0-ppeak)/ppeak:+.1f}%)\n")
+    for d, h, e, s, p, ep, broke, peaked in runs:
+        f.write(f"{d:10s}{h*1000:10.3f}{h/L_ELL:8.3f}{p:10.4f}{ep:10.5f}{100*(p-ppeak)/ppeak:+9.1f}%{str(broke):>9s}" + ("" if peaked else "   unfinished: still rising, left out of the fit") + "\n")
+    f.write(f"\nfit uses {len(done)} run(s)" + (" (one point: this is just a sqrt(1 + h/2l) correction, not a real extrapolation)" if len(done) == 1 else "") + "\n")
+    f.write(f"fitted mesh-independent peak {peak0:.4f} GPa vs paper {ppeak:.4f} GPa ({100*(peak0-ppeak)/ppeak:+.1f}%)\n")
 print(open("mesh_study.txt").read())

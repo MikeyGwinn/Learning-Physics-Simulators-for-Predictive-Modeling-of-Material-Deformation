@@ -47,21 +47,26 @@ python3 ../exo_anim.py rve_paper_out.e --pores --curve rve_paper_out.csv --paper
 | Solver | Monolithic, backward Euler, PJFNK, ASM + LU | Same | match |
 | Loading rate, plane strain/stress | Not stated | 1 (length unit)/s, plane strain | assumed |
 
-## Results so far (Nov 5, 2026)
+## Results so far (Nov 12, 2026)
 
 | Check | Paper | Ours | Note |
 |---|---|---|---|
-| SENT initial slope | 139.3 GPa | 139.2 GPa | -0.1% |
-| SENT peak | 0.70 GPa | no fracture by strain 0.0058 at h = l/2 | mesh study running |
-| RVE initial slope (8 um test mesh, seed 1) | 4.26 GPa | 4.43 GPa | +4% |
-| RVE peak (8 um test mesh, seed 1) | 10.7 MPa | 12.2 MPa | +14%, expected from the coarse mesh |
+| SENT initial slope | 139.3 GPa | 139.0 GPa | -0.2% |
+| SENT peak, h = l/2 | 0.70 GPa | 0.82 GPa (+17.6%) | about 0.74 GPa (+6%) after the AT2 mesh correction; finer meshes rerunning with a direct solver |
+| RVE initial slope, 4 um, mean of pore seeds 1-3 | 4256 MPa | 4255 MPa | 0.0% |
+| RVE peak, 4 um, mean of pore seeds 1-3 | 10.71 MPa | 10.40 MPa | -2.9%; seeds give 11.78 / 9.80 / 9.62 (about +/-11%) |
+| RVE strain at peak, mean of seeds 1-3 | 0.00294 | 0.00276 | -6% |
+| RVE mesh, 8 vs 4 um (same seeds) | | peaks change by -3.3%, -1.6%, +1.1% | 8 um is about 12x cheaper |
+| RVE viscosity eta x 0.1 (seed 1, 4 um) | | 11.72 vs 11.78 MPa | no effect on the peak; keep the paper's 1e-3 |
 | RVE crack pattern | cracks link pores, roughly normal to the load (Fig. 5) | same qualitative pattern | see `results/` |
 
-Known effect: on a mesh of size h the AT2 model behaves as if g_c were about g_c (1 + h/2l), so coarse meshes
-give peaks that are too high. The 4 um and 2 um RVE runs and the three-mesh SENT study test this.
+The first seed-1 run (+14% at 8 um) was a strong pore layout, not a model error: the spread between random
+pore layouts (about +/-11%) is larger than the remaining difference from the paper. The paper's 10.71 MPa is a single RVE.
+On a mesh of size h the AT2 model behaves as if g_c were about g_c (1 + h/2l); this explains most of the SENT
+offset at h = l/2, but changes the RVE peak by only a few percent between 8 and 4 um.
 
 ## Next
 
-- Finish the mesh studies; compare seeds 1-3 with the paper's three RVEs (Fig. 6).
+- Finish the SENT mesh study (h = l/4, l/8 with a direct solver).
 - Same RVE with pores as holes, meshed by SEMtoMesh, against pores as soft regions (RFC check 3, multi-pore).
-- Real ET-10 microstructures: SEM image -> SEMtoMesh -> MOOSE -> data format v0.
+- Real ET-10 microstructures: SEM image -> SEMtoMesh -> MOOSE -> dataset (lps-npz-v1).
