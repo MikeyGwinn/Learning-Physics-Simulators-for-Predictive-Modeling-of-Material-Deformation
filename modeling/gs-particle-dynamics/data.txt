@@ -1,0 +1,58 @@
+An .npz file is a ZIP archive containing one or more .npy files, each holding a single NumPy array. For context, this what params_coarse.npz for the bowling dataset looks like, with the first line being the name of the .npy file:
+
+means3D
+  shape: (1, 1811, 3)
+  dtype: float32
+  range: -0.124793105 to 0.83425117
+  first values: [ 0.1740008   0.82446134 -0.02809348  0.15521753  0.790468   -0.03790423
+  0.13879497  0.79131097]
+
+rgb_colors
+  shape: (1, 1811, 3)
+  dtype: float32
+  range: 0.0 to 1.6793982
+  first values: [0.50014216 0.49992192 0.5001967  0.20400947 0.5418788  0.8912457
+ 0.67363733 0.70007706]
+
+unnorm_rotations
+  shape: (1, 1811, 4)
+  dtype: float32
+  range: -1.0185792 to 1.3085573
+  first values: [ 0.6263125   0.27449575  0.17441325 -0.03433627  0.4255576  -0.15809856
+  0.3559563   0.05477762]
+
+logit_opacities
+  shape: (1, 1811, 1)
+  dtype: float32
+  range: -5.6266665 to 15.68619
+  first values: [-0.16774572 -1.0735817  -4.8016067   6.6833787   4.2633295  -4.3348227
+ -0.19674441  4.5551257 ]
+
+log_scales
+  shape: (1, 1811, 3)
+  dtype: float32
+  range: -16.94999 to -3.3210409
+  first values: [-6.190317  -5.5756297 -3.6281698 -6.522378  -5.7570186 -5.676183
+ -4.8448935 -4.851043 ]
+
+shs
+  shape: (1, 1811, 16, 3)
+  dtype: float32
+  range: -1.8866006 to 3.8148143
+  first values: [-0.01144977  0.00483336  0.01038948  0.01983374  0.02935664  0.0268968
+  0.01622499  0.00501048]
+
+In our case, since we are making 2D point clouds, we can have the third coordinate of means3D to be 0. The reason we don't just change it to 2D is because the model uses PyTorch3D, and this is easier than trying to replace that.
+
+After massive simplifications made to the repo, the model now only predicts displacement of points, and calculates loss through position error (before, it calculated loss based on rendering error too). Rendering should be completely disabled
+
+Because of this, we literally only need means3D, which tracks the position of each point in a point cloud. The rest can be replaced with placeholders. According to Codex, these placeholders should work:
+
+N = means3D.shape[1]
+log_scales = np.zeros((1, N, 3), dtype=np.float32)
+logit_opacities = np.zeros((1, N, 1), dtype=np.float32)
+shs = np.zeros((1, N, 16, 3), dtype=np.float32)
+unnorm_rotations = np.zeros((1, N, 4), dtype=np.float32)
+unnorm_rotations[..., 0] = 1.0  # identity quaternion: [1, 0, 0, 0]
+
+The loader that prepares the data in params_coarse.npz to be used by the model also needs to be redone. I think this is as simple as remove all the object_id stuff, but I'll need to look into it further.

@@ -1,0 +1,14 @@
+numpy==1.26.4
+h5py==3.16.0
+PyYAML==6.0.3
+torch==2.8.0
+torchvision==0.23.0
+timm==1.0.30
+addict==2.4.0
+einops==0.8.2
+trimesh==5.2.0
+spconv-cu126==2.3.8
+rerun-sdk==0.23.1
+pyarrow==20.0.0
+torch-scatter @ https://data.pyg.org/whl/torch-2.8.0%2Bcu128/torch_scatter-2.1.2%2Bpt28cu128-cp311-cp311-linux_x86_64.whl
+flash-attn @ https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3.post2/flash_attn-2.8.3.post2%2Bcu12torch2.8cxx11abiTRUE-cp311-cp311-linux_x86_64.whl
