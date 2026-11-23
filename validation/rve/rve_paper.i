@@ -243,9 +243,9 @@ du    = 0.02       # um per step at most (strain 2e-5)
 
 [Executioner]
   type = Transient
-  solve_type = PJFNK
-  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm      31                  preonly       lu           1'
+  solve_type = NEWTON
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
+  petsc_options_value = 'hypre boomeramg 31'
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
   l_max_its = 50
