@@ -20,14 +20,19 @@ class Config:
     target_porosity: float = 0.20
     clearance_um: float = 0.0
     mesh_size_um: float = 4.0
+    effective_cell_um: float = 50.0
 
     def __post_init__(self):
         for name, value in asdict(self).items():
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
                 raise ValueError(f"{name} must be a finite number")
-        for name in ("size_mm", "radius_sigma", "min_radius_um", "geometric_radius_um", "mesh_size_um"):
+        for name in ("size_mm", "radius_sigma", "min_radius_um", "geometric_radius_um", "mesh_size_um",
+                     "effective_cell_um"):
             if getattr(self, name) <= 0:
                 raise ValueError(f"{name} must be positive")
+        cells = self.size_mm * 1000 / self.effective_cell_um
+        if round(cells) < 1 or abs(cells - round(cells)) > 1e-9 * cells:
+            raise ValueError("size_mm must be a whole number of effective cells")
         if not 0 <= self.target_porosity < 1:
             raise ValueError("target_porosity must be in [0, 1)")
         if self.clearance_um < 0:
@@ -50,6 +55,57 @@ def sample_radius_mm(rng, config):
         if radius_um >= config.min_radius_um:
             return radius_um * 0.001
     raise ValueError("Could not sample a radius above the minimum after 10000 draws")
+
+
+def circle_rectangle_area(x, y, r, x0, x1, y0, y1):
+    """Exact area (mm²) of the circle (x, y, r) inside the rectangle [x0, x1] × [y0, y1]."""
+    def half_chord(u):
+        return math.sqrt(max(r * r - u * u, 0.0))
+
+    def half_chord_integral(u):
+        u = min(max(u, -r), r)
+        return (u * half_chord(u) + r * r * math.asin(u / r)) / 2
+
+    left, right = max(x0, x - r), min(x1, x + r)
+    if left >= right:
+        return 0.0
+    # Split x where the circle crosses y0 or y1; each piece then has a closed-form integral.
+    breaks = {left, right}
+    for edge in (y0, y1):
+        if abs(edge - y) < r:
+            offset = half_chord(edge - y)
+            breaks.update(b for b in (x - offset, x + offset) if left < b < right)
+    breaks = sorted(breaks)
+    area = 0.0
+    for a, b in zip(breaks, breaks[1:]):
+        h = half_chord((a + b) / 2 - x)
+        if min(y1, y + h) <= max(y0, y - h):
+            continue
+        # Top and bottom are each a rectangle edge or y ± half chord: (constant, half-chord sign).
+        top = (y, 1) if y + h < y1 else (y1, 0)
+        bottom = (y, -1) if y - h > y0 else (y0, 0)
+        area += ((top[0] - bottom[0]) * (b - a)
+                 + (top[1] - bottom[1]) * (half_chord_integral(b - x) - half_chord_integral(a - x)))
+    return area
+
+
+def effective_porosity(pores, config):
+    """Small-pore area fraction per square cell, [n][n] with row 0 at the bottom.
+
+    Chakraborty et al. (2016), Section 3: pores below the geometric cutoff become an
+    effective porosity on a coarse grid, and the solver uses E_eff = (1 - f_eff) E.
+    """
+    cell = config.effective_cell_um * 0.001
+    n = round(config.size_mm / cell)
+    areas = [[0.0] * n for _ in range(n)]
+    for pore in pores:
+        if pore["kind"] != "small":
+            continue
+        x, y, r = pore["x_mm"], pore["y_mm"], pore["radius_mm"]
+        for j in range(max(int((y - r) // cell), 0), min(int((y + r) // cell), n - 1) + 1):
+            for i in range(max(int((x - r) // cell), 0), min(int((x + r) // cell), n - 1) + 1):
+                areas[j][i] += circle_rectangle_area(x, y, r, i * cell, (i + 1) * cell, j * cell, (j + 1) * cell)
+    return [[area / cell ** 2 for area in row] for row in areas]
 
 
 def generate(config, seed):
@@ -105,6 +161,8 @@ def generate(config, seed):
         "coordinates": {"origin": "bottom-left", "x": "right", "y": "up"},
         "config": asdict(config),
         "pores": pores,
+        "effective_porosity": {"cell_mm": config.effective_cell_um * 0.001,
+                               "values": effective_porosity(pores, config)},
         "statistics": {
             "pore_count": len(pores),
             "explicit_pore_count": sum(p["kind"] == "explicit" for p in pores),
