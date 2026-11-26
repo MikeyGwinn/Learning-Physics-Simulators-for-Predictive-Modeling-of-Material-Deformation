@@ -30,11 +30,8 @@ class Dataset(TorchDataset):
             if not scene_dir.is_dir():
                 continue
 
-            gs_dir = scene_dir / "gs"
-            if not gs_dir.is_dir():
-                continue
+            frame_paths = self._get_frame_paths(scene_dir)
 
-            frame_paths = self._get_frame_paths(gs_dir)
             scene_index = len(self.scenes)
             self.scenes.append((scene_dir.name, frame_paths))
 
