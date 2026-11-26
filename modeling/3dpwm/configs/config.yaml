@@ -1,9 +1,10 @@
-exp_dir: runs
+exp_dir: /nfs/hpc/share/dinge/3dpwm/runs
 exp_name: deformation
-output_dir: output/deformation
+output_dir: /nfs/hpc/share/dinge/3dpwm/runs
+
 device: cuda
 
-pointcloud: {feat_dim: 9, grid_size: 0.00625}
+pointcloud: {feat_dim: 9, grid_size: 0.003}
 
 model:
   action_channels: 7
@@ -23,11 +24,11 @@ model:
     dec_enable_flash: [true, false]
 
 training:
-  batch_sz: 112
-  num_workers: 8
+  batch_sz: 4
+  num_workers: 2
   log_interval: 25
-  rollout_num: 10
-  epoch: 20
+  rollout_num: 5
+  epoch: 2
   criterion: {loss: HuberLoss, delta: 0.0025} # delta may need to be adjusted
   optimizer: {learning_rate: 0.0001}
   step_size: 10
@@ -37,7 +38,7 @@ training:
 testing: {num_workers: 0, recordings: 2, max_sequences: null}
 
 # the loader searches either data_dir/scenario/train or data_dir/scenario/test
-dataset: {data_dir: TODO, training_fpt: 1,
-  scenario: TODO}
+dataset: {data_dir: /nfs/hpc/share/dinge/3dpwm/processed_data, training_fpt: 1,
+  scenario: sample_v1}
 
 seed: 0
